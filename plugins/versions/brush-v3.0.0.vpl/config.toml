@@ -1,0 +1,4 @@
+name = "Brush"
+description = "Плагин для тестирования загрузки плагинов разных версий"
+author = "Bleyn"
+license = "MIT"

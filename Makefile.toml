@@ -1,0 +1,14 @@
+[tasks.main]
+dependencies = ["build_workspace", "make_native_plugins"]
+
+[tasks.build_workspace]
+command = "cargo"
+args = ["build", "--verbose"]
+
+[tasks.make_native_plugins]
+dependencies = ["native_plugin"]
+
+[tasks.native_plugin]
+cwd = "./plugins/native_plugin"
+command = "cargo"
+args = ["make"]

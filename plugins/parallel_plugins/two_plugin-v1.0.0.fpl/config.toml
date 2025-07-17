@@ -1,0 +1,8 @@
+name = "Two Plugin"
+description = "Плагин для тестирования параллельного вызова функций"
+author = "Bleyn"
+license = "MIT"
+
+[depends]
+
+[optional_depends]

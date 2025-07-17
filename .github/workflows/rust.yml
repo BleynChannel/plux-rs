@@ -1,0 +1,28 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install cargo-make
+      uses: baptiste0928/cargo-install@v2
+      with:
+        crate: cargo-make
+        version: "^0.36.7"
+    - name: Build
+      run: cargo make --no-workspace main
+    - name: Run tests
+      run: cargo test --verbose

@@ -1,0 +1,10 @@
+name = "Paint"
+description = "Плагин для тестирования запуска функций других плагинов"
+author = "Bleyn"
+license = "MIT"
+
+[depends]
+circle = "1.0.0"
+
+[optional_depends]
+square = "1.0.0"

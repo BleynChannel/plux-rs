@@ -1,0 +1,56 @@
+[env]
+profile = "debug"
+targets = [ "${CARGO_MAKE_RUST_TARGET_OS}" ]
+
+__profile__ = { source = "${profile}", default_value = "debug", mapping = { debug = "debug", release = "release" } }
+
+
+[tasks.pack]
+dependencies = ["build"]
+script_runner = "@duckscript"
+script = '''
+profile = get_env __profile__
+targets = get_env targets
+workspace = get_env CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY
+name_project = get_env CARGO_MAKE_CRATE_NAME
+
+fn get_plugin_path
+	handle = glob_array ./native_plugin-v1.0.0.*
+	for entry in ${handle}
+		if is_dir ${entry}
+			return ${entry}
+		end
+	end
+end
+
+fn pack
+	from_path = set "./${1}"
+	to_path = set "./build"
+
+	rm -r ${to_path}
+	cp ${from_path} ${to_path}
+end
+
+fn copy_source
+	workspace_target = set "${workspace}/target/${profile}"
+	package_path = set "./build/${1}"
+
+	handle = split ${targets} ;
+	for target in ${handle}
+		if eq ${target} windows
+			cp "${workspace_target}/${name_project}.dll" "${package_path}/${target}/main.dll"
+		elseif eq ${target} linux
+			cp "${workspace_target}/lib${name_project}.so" "${package_path}/${target}/libmain.so"
+		elseif eq ${target} macos
+			cp "${workspace_target}/${name_project}.dylib" "${package_path}/${target}/main.dylib"
+		end
+	end
+end
+
+plugin_path = get_plugin_path
+pack ${plugin_path}
+copy_source ${plugin_path}
+'''
+
+[tasks.default]
+alias = "pack"

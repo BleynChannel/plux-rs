@@ -1,0 +1,7 @@
+name = "Plugin for manager"
+description = "Плагин для тестирования выгрузки менеджера со всеми его плагинами"
+author = "Bleyn"
+license = "MIT"
+
+[depends]
+function_plugin = "1.0.0"

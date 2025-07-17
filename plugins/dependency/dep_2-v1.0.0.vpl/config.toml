@@ -1,0 +1,10 @@
+name = "Depend 2"
+description = "Плагин для тестирования загрузки и выгрузки зависимых плагинов"
+author = "Bleyn"
+license = "MIT"
+
+[depends]
+dep_1 = "1.0.0"
+
+[optional_depends]
+dep_3 = "2.0.0"

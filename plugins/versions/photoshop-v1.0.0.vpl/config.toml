@@ -1,0 +1,7 @@
+name = "Photoshop"
+description = "Плагин для тестирования загрузки плагинов разных версий"
+author = "Bleyn"
+license = "MIT"
+
+[optional_depends]
+brush = "2.1.0"

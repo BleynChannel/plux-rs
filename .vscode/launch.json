@@ -1,0 +1,122 @@
+{
+	// Используйте IntelliSense, чтобы узнать о возможных атрибутах.
+	// Наведите указатель мыши, чтобы просмотреть описания существующих атрибутов.
+	// Для получения дополнительной информации посетите: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug unit tests in library 'august_plugin_system'",
+			"cargo": {
+				"args": [
+					"test",
+					"--no-run",
+					"--lib",
+					"--package=august_plugin_system"
+				],
+				"filter": {
+					"name": "august_plugin_system",
+					"kind": "lib"
+				}
+			},
+			"args": [],
+			"cwd": "${workspaceFolder}"
+		},
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug integration test 'dependency'",
+			"cargo": {
+				"args": [
+					"test",
+					"--no-run",
+					"--test=dependency",
+					"--package=august_plugin_system"
+				],
+				"filter": {
+					"name": "dependency",
+					"kind": "test"
+				}
+			},
+			"args": [],
+			"cwd": "${workspaceFolder}"
+		},
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug integration test 'function'",
+			"cargo": {
+				"args": [
+					"test",
+					"--no-run",
+					"--test=function",
+					"--package=august_plugin_system"
+				],
+				"filter": {
+					"name": "function",
+					"kind": "test"
+				}
+			},
+			"args": [],
+			"cwd": "${workspaceFolder}"
+		},
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug integration test 'main'",
+			"cargo": {
+				"args": [
+					"test",
+					"--no-run",
+					"--test=main",
+					"--package=august_plugin_system"
+				],
+				"filter": {
+					"name": "main",
+					"kind": "test"
+				}
+			},
+			"args": [],
+			"cwd": "${workspaceFolder}"
+		},
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug integration test 'version'",
+			"cargo": {
+				"args": [
+					"test",
+					"--no-run",
+					"--test=version",
+					"--package=august_plugin_system"
+				],
+				"filter": {
+					"name": "version",
+					"kind": "test"
+				}
+			},
+			"args": [],
+			"cwd": "${workspaceFolder}"
+		},
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug integration test 'main'",
+			"cargo": {
+				"args": [
+					"test",
+					"--no-run",
+					"--test=main",
+					"--package=codegen"
+				],
+				"filter": {
+					"name": "main",
+					"kind": "test"
+				}
+			},
+			"args": [],
+			"cwd": "${workspaceFolder}"
+		}
+	]
+}

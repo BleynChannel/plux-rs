@@ -1,0 +1,6 @@
+name = "Plugin A"
+description = "Плагин для тестирования архивации и разархивации плагинов"
+author = "Bleyn"
+license = "MIT"
+depends = []
+optional_depends = []
