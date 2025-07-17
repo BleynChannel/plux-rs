@@ -1,0 +1,17 @@
+[package]
+name = "august_plugin_system_codegen"
+version = "0.2.1"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = "1.0.78"
+quote = "1.0.35"
+syn = { version = "2.0.48", features = ["full"] }
+
+[dev-dependencies]
+august_plugin_system = { path = ".." }
