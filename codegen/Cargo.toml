@@ -1,5 +1,5 @@
 [package]
-name = "august_plugin_system_codegen"
+name = "august-plugin-system-codegen"
 version = "0.2.1"
 edition = "2021"
 
@@ -14,4 +14,4 @@ quote = "1.0.35"
 syn = { version = "2.0.48", features = ["full"] }
 
 [dev-dependencies]
-august_plugin_system = { path = ".." }
+august-plugin-system = { path = ".." }
