@@ -27,6 +27,4 @@ pub type Registry<O> = Vec<Arc<dyn Function<Output = O>>>;
 pub type Requests = Vec<Request>;
 
 #[cfg(feature = "derive")]
-extern crate august_plugin_system_codegen;
-#[cfg(feature = "derive")]
-pub mod august_plugin_system_codegen;
+pub use august_plugin_system_codegen::*;
