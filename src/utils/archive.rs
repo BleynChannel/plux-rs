@@ -5,7 +5,7 @@ use std::{
     path::Path,
 };
 
-use zip::{write::FileOptions, ZipArchive, ZipWriter};
+use zip::{ZipArchive, ZipWriter, write::SimpleFileOptions};
 
 use crate::Bundle;
 
@@ -15,7 +15,7 @@ pub fn zip<S, F>(
     path: &S,
     target_path: &str,
     compression_method: zip::CompressionMethod,
-    mut on_zip_file: F,
+    mut callback: Option<F>,
 ) -> Result<(), BundleZipError>
 where
     S: AsRef<OsStr> + ?Sized,
@@ -36,7 +36,7 @@ where
             let file =
                 File::create(target_path).map_err(|e| BundleZipError::CreateBundleFailed(e))?;
             let mut archive = ZipWriter::new(file);
-            let options = FileOptions::default()
+            let options = SimpleFileOptions::default()
                 .compression_method(compression_method)
                 .unix_permissions(0o755);
 
@@ -61,7 +61,7 @@ where
                     archive.add_directory_from_path(name, options)?;
                 }
 
-                on_zip_file(name);
+                callback.as_mut().map(|callback| callback(name));
             }
         }),
     }
@@ -103,9 +103,12 @@ fn test_zip() {
     let path = format!("../../bundles/{name}");
 
     let target_path = temp_path;
-    zip(&path, target_path, zip::CompressionMethod::Stored, |name| {
-        println!("{}", name.display())
-    })
+    zip(
+        &path,
+        target_path,
+        zip::CompressionMethod::Stored,
+        Some(|name: &Path| println!("{}", name.display())),
+    )
     .unwrap();
 
     std::fs::remove_file(format!("{target_path}/{name}")).unwrap();
