@@ -7,16 +7,16 @@
 		{
 			"type": "lldb",
 			"request": "launch",
-			"name": "Debug unit tests in library 'august_plugin_system'",
+			"name": "Debug unit tests in library 'plux'",
 			"cargo": {
 				"args": [
 					"test",
 					"--no-run",
 					"--lib",
-					"--package=august_plugin_system"
+					"--package=plux"
 				],
 				"filter": {
-					"name": "august_plugin_system",
+					"name": "plux",
 					"kind": "lib"
 				}
 			},
@@ -32,7 +32,7 @@
 					"test",
 					"--no-run",
 					"--test=dependency",
-					"--package=august_plugin_system"
+					"--package=plux"
 				],
 				"filter": {
 					"name": "dependency",
@@ -51,7 +51,7 @@
 					"test",
 					"--no-run",
 					"--test=function",
-					"--package=august_plugin_system"
+					"--package=plux"
 				],
 				"filter": {
 					"name": "function",
@@ -70,7 +70,7 @@
 					"test",
 					"--no-run",
 					"--test=main",
-					"--package=august_plugin_system"
+					"--package=plux"
 				],
 				"filter": {
 					"name": "main",
@@ -89,7 +89,7 @@
 					"test",
 					"--no-run",
 					"--test=version",
-					"--package=august_plugin_system"
+					"--package=plux"
 				],
 				"filter": {
 					"name": "version",

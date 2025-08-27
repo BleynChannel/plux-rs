@@ -15,7 +15,7 @@ pub(crate) fn generate(ast: &ItemFn, attr: &TokenStream) -> Result<TokenStream> 
     let structure = generate_struct(ast, sig, ident, attr, &exts)?;
 
     Ok(quote! {
-        pub fn #ident(#exts_args) -> impl august_plugin_system::function::Function<Output = august_plugin_system::function::FunctionOutput> {
+        pub fn #ident(#exts_args) -> impl plux::function::Function<Output = plux::function::FunctionOutput> {
             #structure
 
             Function { #externals }

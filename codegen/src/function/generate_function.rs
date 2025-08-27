@@ -87,9 +87,9 @@ fn serialize_output(ty: &TypePath) -> TokenStream {
 
     if let Some((_, token)) = VARIABLE_DATAS.iter().find(|(name, _)| **name == type_name) {
         let token = format_ident!("{}", *token);
-        quote! { august_plugin_system::variable::Variable::#token (result) }
+        quote! { plux::variable::Variable::#token (result) }
     } else if type_name == "Vec" {
-        quote! { august_plugin_system::variable::Variable::List(result.into_iter().map(|item| item.into()).collect()) }
+        quote! { plux::variable::Variable::List(result.into_iter().map(|item| item.into()).collect()) }
     } else if type_name == "Variable" {
         quote! { result }
     } else {

@@ -1,12 +1,12 @@
 #[cfg(test)]
 mod main {
-    use august_plugin_system::{function::Function, function_call, variable::Variable};
+    use plux::{function::Function, function_call, variable::Variable};
 
-    extern crate august_plugin_system;
+    extern crate plux;
 
     mod functions {
-        use august_plugin_system::variable::Variable;
-        use august_plugin_system_codegen::function;
+        use plux::variable::Variable;
+        use plux_codegen::function;
 
         #[function]
         fn add(_: (), a: Vec<&i32>, b: &String) -> Vec<i32> {

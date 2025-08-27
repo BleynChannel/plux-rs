@@ -1,4 +1,4 @@
-# August Plugin System
+# Plux (formerly August Plugin System)
 
 # Установка
 ```bash

@@ -40,22 +40,22 @@ pub(crate) fn generate_struct(
     Ok(quote! {
         struct Function { #externals }
 
-        impl august_plugin_system::function::Function for Function {
-            type Output = august_plugin_system::function::FunctionOutput;
+        impl plux::function::Function for Function {
+            type Output = plux::function::FunctionOutput;
 
             fn name(&self) -> String {
                 #name
             }
 
-            fn inputs(&self) -> Vec<august_plugin_system::function::Arg> {
+            fn inputs(&self) -> Vec<plux::function::Arg> {
                 #inputs
             }
 
-            fn output(&self) -> Option<august_plugin_system::function::Arg> {
+            fn output(&self) -> Option<plux::function::Arg> {
                 #output
             }
 
-            fn call(&self, args: &[august_plugin_system::variable::Variable]) -> Self::Output {
+            fn call(&self, args: &[plux::variable::Variable]) -> Self::Output {
                 #function
             }
         }
@@ -106,7 +106,7 @@ fn generate_output(output: &ReturnType) -> Result<TokenStream> {
 
 fn generate_arg(name: &String, ty: &Type) -> Result<TokenStream> {
     let ty = get_variable_type_path(get_literal_type(ty))?;
-    Ok(quote! { august_plugin_system::function::Arg::new(#name, #ty) })
+    Ok(quote! { plux::function::Arg::new(#name, #ty) })
 }
 
 const VARIABLE_TYPES: [(&str, &str); 15] = [
@@ -133,7 +133,7 @@ fn get_variable_type_path(path: &TypePath) -> Result<TokenStream> {
     match VARIABLE_TYPES.into_iter().find(|(name, _)| **name == ident) {
         Some((_, token)) => {
             let token = format_ident!("{}", token);
-            Ok(quote! { august_plugin_system::variable::VariableType::#token })
+            Ok(quote! { plux::variable::VariableType::#token })
         }
         None => Err(Error::new_spanned(path, "type is not supported")),
     }

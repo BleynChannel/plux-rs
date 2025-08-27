@@ -2,7 +2,7 @@ mod utils;
 
 #[cfg(test)]
 mod tests {
-    use august_plugin_system::{
+    use plux::{
         utils::{UnloadPluginError, UnregisterManagerError, UnregisterPluginError},
         Loader,
     };
