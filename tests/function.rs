@@ -1,11 +1,11 @@
 mod utils;
 
-extern crate august_plugin_system_codegen;
+extern crate plux_codegen;
 
 #[cfg(test)]
 mod tests {
-    use august_plugin_system::{function::Request, variable::VariableType, Loader};
-    use august_plugin_system_codegen::function;
+    use plux::{function::Request, variable::VariableType, Loader};
+    use plux_codegen::function;
     use semver::Version;
 
     use crate::utils::{benchmark, get_plugin_path, LuaPluginManager, VoidPluginManager};

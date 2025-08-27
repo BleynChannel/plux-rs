@@ -1,4 +1,4 @@
-use august_plugin_system::{
+use plux::{
     context::LoadPluginContext, utils::ManagerResult, Api, Manager, Plugin, RegisterPluginContext,
     StdInfo,
 };
