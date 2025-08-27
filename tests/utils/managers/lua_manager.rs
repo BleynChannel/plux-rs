@@ -145,8 +145,8 @@ impl LuaPluginManager {
 
         for info in result.into_iter() {
             let name: String = info.get("name")?;
-            let inputs: Vec<String> = info.get::<_, Vec<String>>("inputs")?;
-            let function = info.get::<_, Function>("func")?;
+            let inputs: Vec<String> = info.get("inputs")?;
+            let function: Function = info.get("func")?;
 
             global.set(format!("__{}__", name), function)?;
 
@@ -169,7 +169,7 @@ impl LuaPluginManager {
 
                     let f: mlua::Function = arc_lua.globals().get(format!("__{}__", name))?;
 
-                    let result = match f.call::<_, Value>(MultiValue::from_vec(lua_args))? {
+                    let result = match f.call::<Value>(MultiValue::from_vec(lua_args))? {
                         Value::Nil => Ok(None),
                         value => Ok(Some(Self::lua2august(&value)?)),
                     };
@@ -227,7 +227,7 @@ impl LuaPluginManager {
 
                             let f: mlua::Function = arc_lua.globals().get(request_name)?;
 
-                            let result = match f.call::<_, Value>(MultiValue::from_vec(lua_args))? {
+                            let result = match f.call::<Value>(MultiValue::from_vec(lua_args))? {
                                 Value::Nil => Ok(None),
                                 value => Ok(Some(Self::lua2august(&value)?)),
                             };
@@ -349,11 +349,14 @@ impl LuaPluginManager {
             Value::UserData(_) => Err(mlua::Error::RuntimeError(
                 "Неподдерживаемый тип переменной".to_string(),
             )),
-            Value::Error(err) => Err(err.clone()),
+            Value::Other(_) => Err(mlua::Error::RuntimeError(
+                "Неподдерживаемый тип переменной".to_string(),
+            )),
+            Value::Error(err) => Err(*err.clone()),
         }
     }
 
-    fn august2lua<'lua>(var: &Variable, lua: &'lua Lua) -> mlua::Result<Value<'lua>> {
+    fn august2lua(var: &Variable, lua: &Lua) -> mlua::Result<Value> {
         match var {
             Variable::Null => Ok(Value::Nil),
             Variable::I8(var) => var.into_lua(lua),
