@@ -1,8 +1,0 @@
-name = "Native Plugin"
-description = ""
-author = "Bleyn"
-license = "MIT"
-
-[depends]
-
-[optional_depends]
