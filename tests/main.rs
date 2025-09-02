@@ -3,11 +3,12 @@ mod utils;
 #[cfg(test)]
 mod tests {
     use plux::{
-        utils::{UnloadPluginError, UnregisterManagerError, UnregisterPluginError},
         Loader,
+        utils::{UnloadPluginError, UnregisterManagerError, UnregisterPluginError},
     };
+    use plux_lua_manager::LuaManager;
 
-    use crate::utils::{get_plugin_path, loader_init, LuaPluginManager, VoidPluginManager};
+    use crate::utils::{get_plugin_path, loader_init, managers::VoidPluginManager};
 
     #[test]
     fn get_plugin_manager() {
@@ -81,14 +82,14 @@ mod tests {
         let mut loader = Loader::new();
         loader.context(|mut ctx| {
             ctx.register_manager(VoidPluginManager::new()).unwrap();
-            ctx.register_manager(LuaPluginManager::new()).unwrap();
+            ctx.register_manager(LuaManager::new()).unwrap();
         });
 
         let paths = vec![
             get_plugin_path("dependency/dep_1", "1.0.0", "vpl"),
             get_plugin_path("plugin_for_manager", "1.0.0", "vpl"),
             get_plugin_path("dependency/dep_2", "1.0.0", "vpl"),
-            get_plugin_path("function_plugin", "1.0.0", "fpl"),
+            get_plugin_path("function_plugin", "1.0.0", "lua"),
             get_plugin_path("dependency/dep_3", "1.0.0", "vpl"),
             get_plugin_path("dependency/dep_4", "1.0.0", "vpl"),
         ];
@@ -97,7 +98,7 @@ mod tests {
             .load_plugins(paths.iter().map(|x| x.to_str().unwrap()))
             .unwrap();
 
-        match loader.unregister_manager("fpl") {
+        match loader.unregister_manager("lua") {
             Err(UnregisterManagerError::UnregisterPlugin(UnregisterPluginError::UnloadError(
                 UnloadPluginError::CurrentlyUsesDepend { .. },
             ))) => assert!(true),
@@ -112,14 +113,14 @@ mod tests {
         let mut loader = Loader::new();
         loader.context(|mut ctx| {
             ctx.register_manager(VoidPluginManager::new()).unwrap();
-            ctx.register_manager(LuaPluginManager::new()).unwrap();
+            ctx.register_manager(LuaManager::new()).unwrap();
         });
 
         let paths = vec![
             get_plugin_path("dependency/dep_1", "1.0.0", "vpl"),
             get_plugin_path("plugin_for_manager", "1.0.0", "vpl"),
             get_plugin_path("dependency/dep_2", "1.0.0", "vpl"),
-            get_plugin_path("function_plugin", "1.0.0", "fpl"),
+            get_plugin_path("function_plugin", "1.0.0", "lua"),
             get_plugin_path("dependency/dep_3", "1.0.0", "vpl"),
             get_plugin_path("dependency/dep_4", "1.0.0", "vpl"),
         ];

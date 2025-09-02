@@ -1,12 +1,8 @@
-mod config;
-mod managers;
-pub use managers::*;
-
-pub use config::*;
+pub mod managers;
 
 use std::path::PathBuf;
 
-use plux::{function::FunctionOutput, Loader, Manager, StdInfo};
+use plux::{Loader, Manager, StdInfo, function::FunctionOutput};
 
 pub fn get_plugin_path(id: &str, version: &str, format: &str) -> PathBuf {
     std::env::current_dir()

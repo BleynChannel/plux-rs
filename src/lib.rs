@@ -28,3 +28,8 @@ pub type Requests = Vec<Request>;
 
 #[cfg(feature = "derive")]
 pub use plux_codegen::*;
+
+
+/// Re-export of common types for manager development.
+pub mod prelude {
+}

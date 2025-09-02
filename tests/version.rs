@@ -4,9 +4,10 @@ mod utils;
 mod tests {
     use std::path::PathBuf;
 
-    use plux::{function::Request, variable::VariableType, Loader};
+    use plux::{Loader, function::Request, variable::VariableType};
+    use plux_lua_manager::LuaManager;
 
-    use crate::utils::{get_plugin_path, loader_init, LuaPluginManager, VoidPluginManager};
+    use crate::utils::{get_plugin_path, loader_init, managers::VoidPluginManager};
 
     const FORMAT: &str = "vpl";
     const PATH: &str = "versions";
@@ -102,13 +103,13 @@ mod tests {
                 vec![VariableType::String],
                 Some(VariableType::String),
             ));
-            ctx.register_manager(LuaPluginManager::new()).unwrap();
+            ctx.register_manager(LuaManager::new()).unwrap();
         });
 
         const VERSIONS: [&str; 2] = ["1.0.0", "2.0.0"];
         let paths: Vec<_> = VERSIONS
             .iter()
-            .map(|&version| get_plugin_path("function_plugin", version, "fpl"))
+            .map(|&version| get_plugin_path("function_plugin", version, "lua"))
             .collect();
 
         loader
@@ -121,10 +122,7 @@ mod tests {
             .get(0)
             .unwrap()
         {
-            Err(e) => match e.downcast_ref::<mlua::Error>() {
-                Some(e) => panic!("[LUA ERROR]: {e:?}"),
-                None => panic!("{:?}: {}", e, e.to_string()),
-            },
+            Err(e) => panic!("{:?}: {}", e, e.to_string()),
             Ok(Some(result)) => println!("{:?}", result),
             Ok(None) => panic!("Unexpected result"),
         };

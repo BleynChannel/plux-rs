@@ -12,13 +12,13 @@ semver = { version = "1.0.26", features = ["serde"] }
 serde = { version = "1.0.219", features = ["derive"] }
 thiserror = "2.0.16"
 walkdir = { version = "2.5.0", optional = true }
-zip = { version = "4.5.0", optional = true }
+zip = { version = "4.6.0", optional = true }
 
 [dev-dependencies]
 plux-codegen = { path = "codegen" }
+plux-lua-manager = { git = "https://github.com/BleynChannel/plux-lua-manager.git", branch = "master" }
 semver = { version = "1.0.26", features = ["serde"] }
 toml = "0.9.5"
-mlua = { version = "0.11.2", features = ["lua54", "vendored", "send"] }
 
 [features]
 derive = ["dep:plux-codegen"]
