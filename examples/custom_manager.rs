@@ -1,5 +1,5 @@
-use plux::function::FunctionOutput;
-use plux::{
+use plux_rs::function::FunctionOutput;
+use plux_rs::{
     Api, LoadPluginContext, Manager, Plugin, RegisterPluginContext, StdInfo, utils::ManagerResult,
 };
 
@@ -93,7 +93,7 @@ impl CustomManager {
 
 // -- Using CustomManager in practice -- //
 
-use plux::Loader;
+use plux_rs::Loader;
 
 fn main() {
     let mut loader = Loader::<FunctionOutput, StdInfo>::new();

@@ -94,13 +94,13 @@ where
 
 #[test]
 fn test_zip() {
-    let temp_path = "../../bundles/temp";
+    let temp_path = "./bundles/temp";
     if !Path::new(temp_path).exists() {
         std::fs::create_dir_all(temp_path).unwrap();
     }
 
     let name = "plugin_a-v1.0.0.vpl";
-    let path = format!("../../bundles/{name}");
+    let path = format!("./bundles/{name}");
 
     let target_path = temp_path;
     zip(
@@ -116,13 +116,13 @@ fn test_zip() {
 
 #[test]
 fn test_unzip() {
-    let temp_path = "../../bundles/temp";
+    let temp_path = "./bundles/temp";
     if !Path::new(temp_path).exists() {
         std::fs::create_dir_all(temp_path).unwrap();
     }
 
     let name = "plugin_b-v1.0.0.vpl";
-    let path = format!("../../bundles/{name}");
+    let path = format!("./bundles/{name}");
 
     let target_path = temp_path;
     let bundle = unzip(&path, target_path).unwrap();
