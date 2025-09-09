@@ -1,6 +1,6 @@
 use std::{collections::HashMap, fs, path::PathBuf};
 
-use plux::{utils::ManagerResult, Depend, StdInfo};
+use plux_rs::{utils::ManagerResult, Depend, StdInfo};
 use semver::VersionReq;
 use serde::{Deserialize, Serialize};
 

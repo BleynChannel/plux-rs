@@ -6,7 +6,7 @@ pub use config::*;
 
 use std::path::PathBuf;
 
-use plux::{function::FunctionOutput, Loader, Manager, StdInfo};
+use plux_rs::{function::FunctionOutput, Loader, Manager, StdInfo};
 
 pub fn get_plugin_path(id: &str, version: &str, format: &str) -> PathBuf {
     std::env::current_dir()

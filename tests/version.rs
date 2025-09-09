@@ -4,7 +4,7 @@ mod utils;
 mod tests {
     use std::path::PathBuf;
 
-    use plux::{function::Request, variable::VariableType, Loader};
+    use plux_rs::{function::Request, variable::VariableType, Loader};
 
     use crate::utils::{get_plugin_path, loader_init, LuaPluginManager, VoidPluginManager};
 

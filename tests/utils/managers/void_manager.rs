@@ -1,4 +1,4 @@
-use plux::{
+use plux_rs::{
     context::LoadPluginContext, utils::ManagerResult, Api, Manager, Plugin, RegisterPluginContext,
     StdInfo,
 };

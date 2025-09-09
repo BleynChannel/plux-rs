@@ -4,7 +4,7 @@ extern crate plux_codegen;
 
 #[cfg(test)]
 mod tests {
-    use plux::{function::Request, variable::VariableType, Loader};
+    use plux_rs::{function::Request, variable::VariableType, Loader};
     use plux_codegen::function;
     use semver::Version;
 

@@ -5,7 +5,7 @@ use std::{
     vec,
 };
 
-use plux::{
+use plux_rs::{
     context::LoadPluginContext,
     function::{Arg, DynamicFunction, FunctionOutput},
     utils::ManagerResult,
@@ -77,7 +77,7 @@ impl<'a> Manager<'a, FunctionOutput, StdInfo> for LuaPluginManager {
 
     fn register_plugin(
         &mut self,
-        context: plux::RegisterPluginContext,
+        context: plux_rs::RegisterPluginContext,
     ) -> ManagerResult<StdInfo> {
         let (_, info) = load_config(context.path)?;
 
