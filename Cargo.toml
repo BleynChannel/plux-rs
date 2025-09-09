@@ -4,7 +4,6 @@ description = "A modular and performant plugin system for Rust applications, ena
 version = "1.0.0-pre.1"
 authors = ["Bleyn"]
 license = "MIT"
-license-file = "LICENSE"
 homepage = "https://github.com/BleynChannel/plux-rs"
 repository = "https://github.com/BleynChannel/plux-rs"
 readme = "README.md"
