@@ -1,8 +1,8 @@
 # Plux (formerly August Plugin System)
 
-[![Crates.io](https://img.shields.io/crates/v/plux)](https://crates.io/crates/plux)
-[![Documentation](https://docs.rs/plux/badge.svg)](https://docs.rs/plux)
-[![License](https://img.shields.io/crates/l/plux)](LICENSE)
+[![Crates.io](https://img.shields.io/crates/v/plux-rs)](https://crates.io/crates/plux-rs)
+[![Documentation](https://docs.rs/plux-rs/badge.svg)](https://docs.rs/plux-rs)
+[![License](https://img.shields.io/crates/l/plux-rs)](LICENSE)
 [![Rust](https://github.com/BleynChannel/plux-rs/actions/workflows/rust.yml/badge.svg)](https://github.com/BleynChannel/plux-rs/actions)
 
 Plux is a comprehensive plugin system for Rust applications, offering a robust and flexible architecture for extending application functionality through plugins. Designed with modularity and performance in mind, Plux enables seamless integration of third-party code while maintaining security and stability.
