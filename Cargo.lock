@@ -482,8 +482,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7edddbd0b52d732b21ad9a5fab5c704c14cd949e5e9a1ec5929a24fded1b904c"
 
 [[package]]
-name = "plux"
-version = "1.0.0-alpha.3"
+name = "plux-codegen"
+version = "0.2.1"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "plux-rs"
+version = "1.0.0-pre.1"
 dependencies = [
  "mlua",
  "plux-codegen",
@@ -494,15 +503,6 @@ dependencies = [
  "toml",
  "walkdir",
  "zip",
-]
-
-[[package]]
-name = "plux-codegen"
-version = "0.2.1"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]

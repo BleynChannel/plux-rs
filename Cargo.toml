@@ -1,6 +1,15 @@
 [package]
-name = "plux"
-version = "1.0.0-alpha.3"
+name = "plux-rs"
+description = "A modular and performant plugin system for Rust applications, enabling secure and stable extension of functionality through external plugins."
+version = "1.0.0-pre.1"
+authors = ["Bleyn"]
+license = "MIT"
+license-file = "LICENSE"
+homepage = "https://github.com/BleynChannel/plux-rs"
+repository = "https://github.com/BleynChannel/plux-rs"
+readme = "README.md"
+keywords = ["plugin", "plugins", "modular", "extensibility", "dynamic-loading", "api"]
+categories = ["api-bindings", "development-tools"]
 edition = "2024"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

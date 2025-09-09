@@ -1,6 +1,13 @@
 [package]
 name = "plux-codegen"
+description = "A code generator for plux-rs"
 version = "0.2.1"
+authors = ["Bleyn"]
+license = "MIT"
+license-file = "LICENSE"
+homepage = "https://github.com/BleynChannel/plux-rs"
+repository = "https://github.com/BleynChannel/plux-rs"
+readme = "README.md"
 edition = "2024"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
