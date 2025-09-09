@@ -2,7 +2,7 @@ mod utils;
 
 #[cfg(test)]
 mod tests {
-    use plux::{
+    use plux_rs::{
         Loader,
         utils::{UnloadPluginError, UnregisterManagerError, UnregisterPluginError},
     };

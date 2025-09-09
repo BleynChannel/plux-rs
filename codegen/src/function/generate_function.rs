@@ -87,9 +87,9 @@ fn serialize_output(ty: &TypePath) -> TokenStream {
 
     if let Some((_, token)) = VARIABLE_DATAS.iter().find(|(name, _)| **name == type_name) {
         let token = format_ident!("{}", *token);
-        quote! { plux::variable::Variable::#token (result) }
+        quote! { plux_rs::variable::Variable::#token (result) }
     } else if type_name == "Vec" {
-        quote! { plux::variable::Variable::List(result.into_iter().map(|item| item.into()).collect()) }
+        quote! { plux_rs::variable::Variable::List(result.into_iter().map(|item| item.into()).collect()) }
     } else if type_name == "Variable" {
         quote! { result }
     } else {

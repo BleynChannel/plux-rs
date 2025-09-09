@@ -1,5 +1,5 @@
 use config::*;
-use plux::{
+use plux_rs::{
     Api, Manager, Plugin, RegisterPluginContext, StdInfo, context::LoadPluginContext,
     utils::ManagerResult,
 };

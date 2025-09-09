@@ -2,7 +2,7 @@ pub mod managers;
 
 use std::path::PathBuf;
 
-use plux::{Loader, Manager, StdInfo, function::FunctionOutput};
+use plux_rs::{Loader, Manager, StdInfo, function::FunctionOutput};
 
 pub fn get_plugin_path(id: &str, version: &str, format: &str) -> PathBuf {
     std::env::current_dir()

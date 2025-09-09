@@ -1,24 +1,32 @@
 [package]
-name = "plux"
+name = "plux-rs"
+description = "A modular and performant plugin system for Rust applications, enabling secure and stable extension of functionality through external plugins."
 version = "1.0.0"
+authors = ["Bleyn"]
+license = "MIT"
+homepage = "https://github.com/BleynChannel/plux-rs"
+repository = "https://github.com/BleynChannel/plux-rs"
+readme = "README.md"
+keywords = ["plugin", "modular", "extensibility", "dynamic-loading", "api"]
+categories = ["api-bindings", "development-tools"]
 edition = "2024"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-plux-codegen = { path = "codegen", optional = true }
-rayon = "1.11"
-semver = { version = "1.0", features = ["serde"] }
-serde = { version = "1.0", features = ["derive"] }
-thiserror = "2.0"
-walkdir = { version = "2.5", optional = true }
-zip = { version = "4.6", optional = true }
+plux-codegen = { path = "codegen", version = "0.2.2", optional = true }
+rayon = "1.11.0"
+semver = { version = "1.0.26", features = ["serde"] }
+serde = { version = "1.0.219", features = ["derive"] }
+thiserror = "2.0.16"
+walkdir = { version = "2.5.0", optional = true }
+zip = { version = "5.0.0", optional = true }
 
 [dev-dependencies]
-plux-codegen = { path = "codegen" }
+plux-codegen = { path = "codegen", version = "0.2.2" }
 plux-lua-manager = { git = "https://github.com/BleynChannel/plux-lua-manager.git", branch = "master" }
-semver = { version = "1.0", features = ["serde"] }
-toml = "0.9"
+semver = { version = "1.0.26", features = ["serde"] }
+toml = "0.9.5"
 
 [features]
 default = ["full"]
