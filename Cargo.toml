@@ -7,7 +7,7 @@ license = "MIT"
 homepage = "https://github.com/BleynChannel/plux-rs"
 repository = "https://github.com/BleynChannel/plux-rs"
 readme = "README.md"
-keywords = ["plugin", "plugins", "modular", "extensibility", "dynamic-loading", "api"]
+keywords = ["plugin", "modular", "extensibility", "dynamic-loading", "api"]
 categories = ["api-bindings", "development-tools"]
 edition = "2024"
 
