@@ -56,7 +56,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-plux = { version = "1.0.0", features = ["full"] }
+plux-rs = "1.0.0"
 ```
 
 ## Quick Start
@@ -67,19 +67,19 @@ plux = { version = "1.0.0", features = ["full"] }
 
 ```toml
 [dependencies]
-plux = { version = "1.0.0", features = ["derive"] }
+plux-rs = { version = "1.0.0", features = ["derive"] }
 plux-lua-manager = "0.1.0"  # For running Lua plugins
 ```
 
 2. Create your main application:
 
 ```rust
-use plux::prelude::*;
+use plux_rs::prelude::*;
 use plux_lua_manager::LuaManager;
 
 // Declare a function that will be available to all plugins
-// The `derive` feature is required for the `plux::function` macro
-#[plux::function]
+// The `derive` feature is required for the `plux_rs::function` macro
+#[plux_rs::function]
 fn add(_: (), a: &i32, b: &i32) -> i32 {
     a + b
 }
@@ -185,13 +185,13 @@ Plux provides several feature flags to customize functionality:
 ### Plugin Development
 
 - `derive` - Enables derive macros for implementing plugin traits
-  - `#[plux::function]` - Expose Rust functions to plugins
+  - `#[plux_rs::function]` - Expose Rust functions to plugins
 
 ### Plugin Packaging
 
 - `archive` - Adds support for packaging plugins as zip archives
-  - `plux::utils::archive::zip` - Bundle plugin files into an archive
-  - `plux::utils::archive::unzip` - Extract plugin files from an archive
+  - `plux_rs::utils::archive::zip` - Bundle plugin files into an archive
+  - `plux_rs::utils::archive::unzip` - Extract plugin files from an archive
 
 ### Serialization (enabled by default)
 

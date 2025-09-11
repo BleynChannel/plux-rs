@@ -2,10 +2,7 @@ mod utils;
 
 #[cfg(test)]
 mod tests {
-    use plux_rs::{
-        Loader,
-        utils::{UnloadPluginError, UnregisterManagerError, UnregisterPluginError},
-    };
+    use plux_rs::prelude::*;
     use plux_lua_manager::LuaManager;
 
     use crate::utils::{get_plugin_path, loader_init, managers::VoidPluginManager};

@@ -11,6 +11,43 @@ use crate::Bundle;
 
 use super::{BundleUnzipError, BundleZipError};
 
+/// Compresses a directory into a ZIP archive.
+///
+/// This function creates a ZIP archive from a directory, preserving the directory structure.
+/// It's commonly used for packaging plugin bundles.
+///
+/// # Parameters
+///
+/// * `path` - Path to the directory to compress
+/// * `target_path` - Directory where the ZIP file will be created
+/// * `compression_method` - Compression method to use (e.g., Stored, Deflated)
+/// * `callback` - Optional callback function called for each processed file/directory
+///
+/// # Returns
+///
+/// Returns `Result<(), BundleZipError>` indicating success or failure.
+///
+/// # Type Parameters
+///
+/// * `S` - Type that can be converted to OsStr (for the source path)
+/// * `F` - Callback function type that takes a `&Path`
+///
+/// # Example
+///
+/// ```rust,no_run
+/// use plux_rs::utils::archive::zip;
+/// use std::path::Path;
+/// use zip::CompressionMethod;
+///
+/// // Compress a plugin directory
+/// zip(
+///     "path/to/plugin_directory",
+///     "output/directory",
+///     CompressionMethod::Deflated,
+///     Some(|path: &Path| println!("Processing: {}", path.display()))
+/// )?;
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
 pub fn zip<S, F>(
     path: &S,
     target_path: &str,
@@ -67,6 +104,35 @@ where
     }
 }
 
+/// Extracts a ZIP archive to a directory.
+///
+/// This function extracts a ZIP archive and creates a Bundle from the extracted directory.
+/// It's commonly used for unpacking plugin bundles.
+///
+/// # Parameters
+///
+/// * `path` - Path to the ZIP file to extract
+/// * `target_path` - Directory where the archive will be extracted
+///
+/// # Returns
+///
+/// Returns `Result<Bundle, BundleUnzipError>` containing the bundle information
+/// from the extracted directory on success.
+///
+/// # Type Parameters
+///
+/// * `S` - Type that can be converted to OsStr (for the archive path)
+///
+/// # Example
+///
+/// ```rust,no_run
+/// use plux_rs::utils::archive::unzip;
+///
+/// // Extract a plugin bundle
+/// let bundle = unzip("path/to/plugin.zip", "output/directory")?;
+/// println!("Extracted plugin: {}", bundle.id);
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
 pub fn unzip<S>(path: &S, target_path: &str) -> Result<Bundle, BundleUnzipError>
 where
     S: AsRef<OsStr> + ?Sized,

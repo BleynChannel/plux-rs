@@ -1,11 +1,8 @@
 mod utils;
 
-extern crate plux_codegen;
-
 #[cfg(test)]
 mod tests {
-    use plux_rs::{Loader, function::Request, variable::VariableType};
-    use plux_codegen::function;
+    use plux_rs::prelude::*;
     use plux_lua_manager::LuaManager;
     use semver::Version;
 
