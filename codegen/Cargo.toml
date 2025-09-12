@@ -1,7 +1,7 @@
 [package]
 name = "plux-codegen"
 description = "A code generator for plux-rs"
-version = "0.2.2"
+version = "0.2.3"
 authors = ["Bleyn"]
 license = "MIT"
 homepage = "https://github.com/BleynChannel/plux-rs"

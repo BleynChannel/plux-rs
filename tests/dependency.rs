@@ -6,7 +6,7 @@ mod dependency {
 
     use semver::Version;
 
-    use crate::utils::{get_plugin_path, loader_init, VoidPluginManager};
+    use crate::utils::{get_plugin_path, loader_init, managers::VoidPluginManager};
 
     fn get_dependencys_path() -> Vec<PathBuf> {
         vec![

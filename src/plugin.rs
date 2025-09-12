@@ -3,12 +3,30 @@ use std::{cmp::Ordering, fmt::Debug, sync::Arc};
 use semver::Version;
 
 use crate::{
+    Bundle, Depend, Info, Manager, PluginInfo, Registry,
     function::Function,
     utils::{PluginCallFunctionError, PluginCallRequestError, PluginRegisterFunctionError, Ptr},
     variable::Variable,
-    Bundle, Depend, Info, Manager, PluginInfo, Registry,
 };
 
+/// Represents a loaded plugin instance.
+///
+/// A Plugin encapsulates all the information and functionality related to a single plugin,
+/// including its metadata, execution state, and available functions.
+///
+/// # Type Parameters
+///
+/// * `'a` - Lifetime parameter for references within the plugin
+/// * `O` - Output type for plugin functions (must implement Send + Sync)
+/// * `I` - Plugin information type (must implement Info trait)
+///
+/// # Fields
+///
+/// * `manager` - Reference to the manager responsible for this plugin
+/// * `info` - Plugin metadata and configuration
+/// * `is_load` - Whether the plugin is currently loaded and ready for execution
+/// * `requests` - Functions that this plugin must implement at the request of the host
+/// * `registry` - Functions exposed by this plugin to other plugins or the host
 pub struct Plugin<'a, O: Send + Sync, I: Info> {
     pub(crate) manager: Ptr<'a, Box<dyn Manager<'a, O, I>>>,
     pub(crate) info: PluginInfo<I>,
@@ -18,6 +36,18 @@ pub struct Plugin<'a, O: Send + Sync, I: Info> {
 }
 
 impl<'a, O: Send + Sync, I: Info> Plugin<'a, O, I> {
+    /// Creates a new plugin instance.
+    ///
+    /// This is an internal constructor used by the loader when registering plugins.
+    ///
+    /// # Parameters
+    ///
+    /// * `manager` - Reference to the manager responsible for this plugin
+    /// * `info` - Plugin metadata and configuration
+    ///
+    /// # Returns
+    ///
+    /// Returns a new Plugin instance with default unloaded state.
     pub(crate) const fn new(
         manager: Ptr<'a, Box<dyn Manager<'a, O, I>>>,
         info: PluginInfo<I>,
@@ -31,18 +61,50 @@ impl<'a, O: Send + Sync, I: Info> Plugin<'a, O, I> {
         }
     }
 
+    /// Returns information about this plugin.
+    ///
+    /// # Returns
+    ///
+    /// Returns a reference to the plugin's metadata and configuration.
     pub const fn info(&self) -> &PluginInfo<I> {
         &self.info
     }
 
+    /// Checks if the plugin is currently loaded and ready for execution.
+    ///
+    /// # Returns
+    ///
+    /// Returns `true` if the plugin is loaded, `false` otherwise.
     pub const fn is_load(&self) -> bool {
         self.is_load
     }
 
+    /// Returns the list of function requests this plugin must implement.
+    ///
+    /// Function requests are functions that this plugin must implement at the request of the host.
+    /// These are functions that the host can call on this plugin when needed.
+    ///
+    /// # Returns
+    ///
+    /// Returns a reference to the vector of function requests.
     pub const fn get_requests(&self) -> &Vec<Box<dyn Function<Output = O>>> {
         &self.requests
     }
 
+    /// Calls a function request by name with the given arguments.
+    ///
+    /// This method searches through the plugin's requests and executes the one matching
+    /// the provided name. These are functions that the plugin implements for the host to call.
+    ///
+    /// # Parameters
+    ///
+    /// * `name` - Name of the function request to call
+    /// * `args` - Arguments to pass to the function
+    ///
+    /// # Returns
+    ///
+    /// Returns `Result<O, PluginCallRequestError>` containing the function result on success,
+    /// or an error if the request is not found.
     pub fn call_request(&self, name: &str, args: &[Variable]) -> Result<O, PluginCallRequestError> {
         self.requests
             .iter()
@@ -53,10 +115,31 @@ impl<'a, O: Send + Sync, I: Info> Plugin<'a, O, I> {
             .ok_or(PluginCallRequestError::NotFound)
     }
 
+    /// Returns the registry of functions exposed by this plugin.
+    ///
+    /// The registry contains functions that this plugin makes available to other plugins
+    /// or the host application.
+    ///
+    /// # Returns
+    ///
+    /// Returns a reference to the function registry.
     pub const fn get_registry(&self) -> &Registry<O> {
         &self.registry
     }
 
+    /// Registers a new function in this plugin's registry.
+    ///
+    /// This method adds a function to the plugin's registry, making it available for
+    /// other plugins or the host to call.
+    ///
+    /// # Parameters
+    ///
+    /// * `function` - The function to register
+    ///
+    /// # Returns
+    ///
+    /// Returns `Result<(), PluginRegisterFunctionError>` indicating success or failure.
+    /// Fails if a function with the same name is already registered.
     pub fn register_function<F>(&mut self, function: F) -> Result<(), PluginRegisterFunctionError>
     where
         F: Function<Output = O> + 'static,
@@ -72,6 +155,20 @@ impl<'a, O: Send + Sync, I: Info> Plugin<'a, O, I> {
         }
     }
 
+    /// Calls a function from this plugin's registry by name.
+    ///
+    /// This method searches through the plugin's registry and executes the function
+    /// matching the provided name.
+    ///
+    /// # Parameters
+    ///
+    /// * `name` - Name of the function to call
+    /// * `args` - Arguments to pass to the function
+    ///
+    /// # Returns
+    ///
+    /// Returns `Result<O, PluginCallFunctionError>` containing the function result on success,
+    /// or an error if the function is not found.
     pub fn call_function(
         &self,
         name: &str,

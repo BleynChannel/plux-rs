@@ -1,0 +1,8 @@
+name = "Hot Reload Plugin"
+description = "A simple hot reload plugin"
+author = "Bleyn"
+license = "MIT"
+
+[depends]
+
+[optional_depends]

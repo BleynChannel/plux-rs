@@ -40,7 +40,12 @@ fn generate_inputs(inputs: &Vec<(Ident, &Type)>) -> TokenStream {
         .enumerate()
         .map(|(index, (_, ty))| {
             let ty = clear_ref(*ty);
-            quote! { args[#index].try_parse_ref::<#ty>()? }
+            let type_name = ty.path.segments.last().unwrap().ident.to_string();
+            if type_name == "Variable" {
+                quote! { &args[#index].clone() }
+            } else {
+                quote! { args[#index].try_parse_ref::<#ty>()? }
+            }
         })
         .collect();
 

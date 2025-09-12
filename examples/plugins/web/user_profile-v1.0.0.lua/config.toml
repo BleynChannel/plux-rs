@@ -1,0 +1,8 @@
+name = "User Profile Plugin"
+description = "A simple user profile plugin"
+author = "Bleyn"
+license = "MIT"
+
+[depends]
+
+[optional_depends]

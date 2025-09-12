@@ -1,14 +1,12 @@
 mod utils;
 
-extern crate plux_codegen;
-
 #[cfg(test)]
 mod tests {
-    use plux_rs::{function::Request, variable::VariableType, Loader};
-    use plux_codegen::function;
+    use plux_lua_manager::LuaManager;
+    use plux_rs::prelude::*;
     use semver::Version;
 
-    use crate::utils::{benchmark, get_plugin_path, LuaPluginManager, VoidPluginManager};
+    use crate::utils::{benchmark, get_plugin_path, managers::VoidPluginManager};
 
     #[function]
     fn add(_: (), a: &i32, b: &i32) -> i32 {
@@ -48,12 +46,12 @@ mod tests {
                 vec![VariableType::I32, VariableType::I32],
                 Some(VariableType::I32),
             ));
-            ctx.register_manager(LuaPluginManager::new()).unwrap();
+            ctx.register_manager(LuaManager::new()).unwrap();
         });
 
         loader
             .load_plugin_now(
-                get_plugin_path("function_plugin", "1.0.0", "fpl")
+                get_plugin_path("function_plugin", "1.0.0", "lua")
                     .to_str()
                     .unwrap(),
             )
@@ -69,12 +67,12 @@ mod tests {
                 vec![VariableType::String],
                 Some(VariableType::String),
             ));
-            ctx.register_manager(LuaPluginManager::new()).unwrap();
+            ctx.register_manager(LuaManager::new()).unwrap();
         });
 
         let plugin = loader
             .load_plugin_now(
-                get_plugin_path("function_plugin", "1.0.0", "fpl")
+                get_plugin_path("function_plugin", "1.0.0", "lua")
                     .to_str()
                     .unwrap(),
             )
@@ -85,10 +83,7 @@ mod tests {
             .call_request("echo", &["Hello world".into()])
             .unwrap()
         {
-            Err(e) => match e.downcast_ref::<mlua::Error>() {
-                Some(e) => panic!("[LUA ERROR]: {e:?}"),
-                None => panic!("{:?}: {}", e, e.to_string()),
-            },
+            Err(e) => panic!("{:?}: {}", e, e.to_string()),
             Ok(Some(result)) => println!("{:?}", result),
             Ok(None) => panic!("Unexpected result"),
         };
@@ -101,12 +96,12 @@ mod tests {
             ctx.register_function(add());
             ctx.register_function(sub());
             ctx.register_request(Request::new("main".to_string(), vec![], None));
-            ctx.register_manager(LuaPluginManager::new()).unwrap();
+            ctx.register_manager(LuaManager::new()).unwrap();
         });
 
         let plugin = loader
             .load_plugin_now(
-                get_plugin_path("function_plugin", "1.0.0", "fpl")
+                get_plugin_path("function_plugin", "1.0.0", "lua")
                     .to_str()
                     .unwrap(),
             )
@@ -114,10 +109,7 @@ mod tests {
             .unwrap();
 
         match plugin.call_request("main", &[]).unwrap() {
-            Err(e) => match e.downcast_ref::<mlua::Error>() {
-                Some(e) => panic!("[LUA ERROR]: {e:?}"),
-                None => panic!("{:?}: {}", e, e.to_string()),
-            },
+            Err(e) => panic!("{:?}: {}", e, e.to_string()),
             Ok(_) => (),
         };
     }
@@ -131,12 +123,12 @@ mod tests {
                 vec![VariableType::String],
                 Some(VariableType::String),
             ));
-            ctx.register_manager(LuaPluginManager::new()).unwrap();
+            ctx.register_manager(LuaManager::new()).unwrap();
         });
 
         loader
             .load_plugin_now(
-                get_plugin_path("function_plugin", "1.0.0", "fpl")
+                get_plugin_path("function_plugin", "1.0.0", "lua")
                     .to_str()
                     .unwrap(),
             )
@@ -148,10 +140,7 @@ mod tests {
             .get(0)
             .unwrap()
         {
-            Err(e) => match e.downcast_ref::<mlua::Error>() {
-                Some(e) => panic!("[LUA ERROR]: {e:?}"),
-                None => panic!("{:?}: {}", e, e.to_string()),
-            },
+            Err(e) => panic!("{:?}: {}", e, e.to_string()),
             Ok(Some(result)) => println!("{:?}", result),
             Ok(None) => panic!("Unexpected result"),
         };
@@ -166,15 +155,15 @@ mod tests {
                 vec![VariableType::I32],
                 None,
             ));
-            ctx.register_manager(LuaPluginManager::new()).unwrap();
+            ctx.register_manager(LuaManager::new()).unwrap();
         });
 
         loader
             .load_plugins([
-                get_plugin_path("parallel_plugins/one_plugin", "1.0.0", "fpl")
+                get_plugin_path("parallel_plugins/one_plugin", "1.0.0", "lua")
                     .to_str()
                     .unwrap(),
-                get_plugin_path("parallel_plugins/two_plugin", "1.0.0", "fpl")
+                get_plugin_path("parallel_plugins/two_plugin", "1.0.0", "lua")
                     .to_str()
                     .unwrap(),
             ])
@@ -184,20 +173,14 @@ mod tests {
         println!("Single: {duration:?}");
 
         if let Err(e) = result.unwrap().get(0).unwrap() {
-            match e.downcast_ref::<mlua::Error>() {
-                Some(e) => panic!("[LUA ERROR]: {e:?}"),
-                None => panic!("{:?}: {}", e, e.to_string()),
-            }
+            panic!("{:?}: {}", e, e.to_string());
         }
 
         let (duration, result) = benchmark(|| loader.par_call_request("main", &[10.into()]));
         println!("Parallel: {duration:?}");
 
         if let Err(e) = result.unwrap().get(0).unwrap() {
-            match e.downcast_ref::<mlua::Error>() {
-                Some(e) => panic!("[LUA ERROR]: {e:?}"),
-                None => panic!("{:?}: {}", e, e.to_string()),
-            }
+            panic!("{:?}: {}", e, e.to_string());
         }
     }
 
@@ -205,13 +188,13 @@ mod tests {
     fn call_plugin_function() {
         let mut loader = Loader::new();
         loader.context(move |mut ctx| {
-            ctx.register_manager(LuaPluginManager::new()).unwrap();
+            ctx.register_manager(LuaManager::new()).unwrap();
         });
 
         let paths = [
-            get_plugin_path("plugin_function/circle", "1.0.0", "fpl"),
-            get_plugin_path("plugin_function/square", "1.0.0", "fpl"),
-            get_plugin_path("plugin_function/paint", "1.0.0", "fpl"),
+            get_plugin_path("plugin_function/circle", "1.0.0", "lua"),
+            get_plugin_path("plugin_function/square", "1.0.0", "lua"),
+            get_plugin_path("plugin_function/paint", "1.0.0", "lua"),
         ];
 
         loader
