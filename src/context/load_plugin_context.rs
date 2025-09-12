@@ -21,18 +21,22 @@ use crate::{Info, Plugin, Requests, function::Function, utils::RegisterRequestEr
 /// # Example
 ///
 /// ```rust,no_run
-/// use plux_rs::{Manager, LoadPluginContext, Api, StdInfo};
+/// use plux_rs::{Manager, utils::ManagerResult, LoadPluginContext, RegisterPluginContext, Api, StdInfo};
 ///
 /// struct MyManager;
 ///
 /// impl Manager<'_, (), StdInfo> for MyManager {
 ///     fn format(&self) -> &'static str { "my" }
+/// 
+///     fn register_plugin(&mut self, _context: RegisterPluginContext) -> ManagerResult<StdInfo> {
+///         Ok(StdInfo::new())
+///     }
 ///
 ///     fn load_plugin(
 ///         &mut self,
 ///         context: LoadPluginContext<'_, '_, (), StdInfo>,
 ///         api: Api<(), StdInfo>
-///     ) -> Result<(), Box<dyn std::error::Error>> {
+///     ) -> ManagerResult<()> {
 ///         // Register plugin functions that match the requests
 ///         for request in context.requests() {
 ///             // Register corresponding function in the plugin

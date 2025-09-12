@@ -115,48 +115,55 @@ pub type Requests = Vec<Request>;
 /// ### Usage
 ///
 /// ```rust,no_run
+/// use plux_rs::prelude::*;
+/// 
 /// // Basic usage with primitive types
 /// #[plux_rs::function]
-/// fn add(_: (), a: i32, b: i32) -> i32 {
+/// fn add(_: (), a: &i32, b: &i32) -> i32 {
 ///     a + b
 /// }
 ///
 /// // With references for better performance
 /// #[plux_rs::function]
-/// fn concat(_: (), a: &str, b: &str) -> String {
-///     format!("{} {}", a, b)
+/// fn concat(_: (), a: &String, b: Vec<&String>) -> String {
+///     let v = b.into_iter().map(|s| s.clone()).collect::<Vec<String>>();
+///     format!("{} {}", a, v.join(" "))
 /// }
 ///
 /// // With context parameter (first parameter is always the context)
 /// #[plux_rs::function]
-/// fn greet(message: &String, name: &str) -> String {
+/// fn greet(message: &String, name: &Variable) -> String {
 ///     format!("{} {}", message, name)
 /// }
 /// 
-/// let mut loader = Loader::new();
-/// loader.context(move |mut ctx| {
-///     ctx.register_function(add());
-///     ctx.register_function(concat());
-///     ctx.register_function(greet("Hello world".to_string()));
-///     
-///     Ok::<(), Box<dyn std::error::Error>>(())
-/// }).unwrap();
-/// 
+/// let mut loader = Loader::<'_, FunctionOutput, StdInfo>::new();
+/// loader
+///     .context(move |mut ctx| {
+///         ctx.register_function(add());
+///         ctx.register_function(concat());
+///         ctx.register_function(greet("Hello world,".to_string()));
+///
+///         Ok::<(), Box<dyn std::error::Error>>(())
+///     })
+///     .unwrap();
+///
 /// let registry = loader.get_registry();
-/// 
+///
 /// let add_function = registry.get(0).unwrap();
 /// let concat_function = registry.get(1).unwrap();
 /// let greet_function = registry.get(2).unwrap();
-/// let great_function = registry.get(3).unwrap();
-/// 
+///
 /// let result = add_function.call(&[1.into(), 2.into()]).unwrap().unwrap();
 /// assert_eq!(result, 3.into());
-/// 
-/// let result = concat_function.call(&["Hello".into(), "world".into()]).unwrap().unwrap();
-/// assert_eq!(result, "Hello world".into());
-/// 
-/// let result = great_function.call(&[true.into()]).unwrap().unwrap();
-/// assert_eq!(result, "Hello world".into());
+///
+/// let result = concat_function
+///     .call(&["Hi".into(), vec!["guest", "!"].into()])
+///     .unwrap()
+///     .unwrap();
+/// assert_eq!(result, "Hi guest !".into());
+///
+/// let result = greet_function.call(&["guest".into()]).unwrap().unwrap();
+/// assert_eq!(result, "Hello world, guest".into());
 /// ```
 ///
 /// ### Features

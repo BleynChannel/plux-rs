@@ -7,7 +7,7 @@ use plux_rs::{Manager, prelude::*};
 pub fn get_plugin_path(id: &str, version: &str, format: &str) -> PathBuf {
     std::env::current_dir()
         .unwrap()
-        .join(format!("./plugins/{id}-v{version}.{format}"))
+        .join(format!("./tests/plugins/{id}-v{version}.{format}"))
 }
 
 #[allow(dead_code)]

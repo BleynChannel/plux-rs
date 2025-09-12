@@ -6,7 +6,7 @@
 /// # Examples
 ///
 /// ```rust
-/// use plux_rs::function::{DynamicFunction, Arg, FunctionOutput, function_call};
+/// use plux_rs::{function_call, function::{Function, DynamicFunction, Arg, FunctionOutput}};
 /// use plux_rs::variable::VariableType;
 ///
 /// let add = DynamicFunction::new(
@@ -17,8 +17,8 @@
 ///     ],
 ///     Some(Arg::new("result", VariableType::I32)),
 ///     |args| -> FunctionOutput {
-///         let a: i32 = args[0].parse_ref();
-///         let b: i32 = args[1].parse_ref();
+///         let a = args[0].parse_ref::<i32>();
+///         let b = args[1].parse_ref::<i32>();
 ///         Ok(Some((a + b).into()))
 ///     }
 /// );

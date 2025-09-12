@@ -25,12 +25,12 @@ use crate::{
 ///
 /// # Example
 ///
-/// ```rust,no_run
+/// ```rust,no_run,ignore
 /// use plux_rs::prelude::*;
 /// use plux_custom_manager::CustomManager;
 ///
 /// #[plux_rs::function]
-/// fn my_function(_: ()) -> () {
+/// fn my_function(_: ()) {
 ///     // Function implementation
 /// }
 /// 

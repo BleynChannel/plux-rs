@@ -95,12 +95,23 @@ impl CustomManager {
 
 use plux_rs::Loader;
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut loader = Loader::<FunctionOutput, StdInfo>::new();
     loader.context(|mut ctx| {
-        ctx.register_manager(CustomManager::new()).unwrap(); // Register the manager
-    });
+        ctx.register_manager(CustomManager::new())?; // Register the manager
+
+        Ok::<(), Box<dyn std::error::Error>>(())
+    })?;
 
     // Here you can load your plugin
-    // loader.load_plugin_now("my_plugin-v1.0.0.cst").unwrap();
+    let bundle = match loader.load_plugin_now("my_plugin-v1.0.0.cst") {
+        Ok(bundle) => bundle,
+        Err((Some(e), _)) => return Err(e.into()),
+        Err((None, Some(e))) => return Err(e.into()),
+        Err((None, None)) => return Err("Unknown error".into()),
+    };
+
+    println!("Plugin loaded - Bundle: {}", bundle);
+
+    Ok(())
 }

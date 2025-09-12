@@ -15,7 +15,7 @@ edition = "2024"
 
 [dependencies]
 # Utils
-plux-codegen = { path = "codegen", version = "0.2.2", optional = true }
+plux-codegen = { path = "codegen", version = "0.2", optional = true }
 serde = { version = "1.0", features = ["derive"] }
 semver = { version = "1.0", features = ["serde"] }
 thiserror = "2.0"

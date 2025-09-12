@@ -20,7 +20,7 @@ use std::{
 ///
 /// # Example
 ///
-/// ```rust,no_run
+/// ```rust
 /// use plux_rs::utils::Ptr;
 ///
 /// let mut data = 42;

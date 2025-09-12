@@ -34,7 +34,7 @@ use crate::{
 ///
 /// # Example
 ///
-/// ```rust,no_run
+/// ```rust,no_run,ignore
 /// use plux_rs::prelude::*;
 /// use plux_custom_manager::CustomManager;
 ///
@@ -87,12 +87,12 @@ impl<'a, O: Send + Sync, I: Info> Loader<'a, O, I> {
     /// # Example
     ///
     /// ```rust,no_run
-    /// use plux_rs::Loader;
+    /// use plux_rs::{Loader, StdInfo};
     ///
-    /// let mut loader = Loader::new();
+    /// let mut loader = Loader::<'_, (), StdInfo>::new();
     /// loader.context(|mut ctx| {
     ///     // Register managers, functions, and requests here
-    ///     Ok(())
+    ///     Ok::<(), Box<dyn std::error::Error>>(())
     /// });
     /// ```
     pub fn context<FO, R>(&mut self, f: FO) -> R
@@ -1097,12 +1097,18 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Loader<'static, O, I> {
     /// # Example
     ///
     /// ```rust,no_run
-    /// use plux_rs::Loader;
+    /// use plux_rs::{Loader, StdInfo};
     ///
-    /// let mut loader = Loader::new();
+    /// let mut loader = Loader::<'_, (), StdInfo>::new();
     /// // Configure loader with managers...
     ///
-    /// let bundle = loader.load_plugin_now("my_plugin-v1.0.0.cst")?;
+    /// let bundle = match loader.load_plugin_now("my_plugin-v1.0.0.cst")  {
+    ///     Ok(bundle) => bundle,
+    ///     Err((Some(e), _)) => return Err(e.into()),
+    ///     Err((None, Some(e))) => return Err(e.into()),
+    ///     Err((None, None)) => return Err("Unknown error".into()),
+    /// };
+    /// 
     /// println!("Loaded plugin: {}", bundle.id);
     /// # Ok::<(), Box<dyn std::error::Error>>(())
     /// ```

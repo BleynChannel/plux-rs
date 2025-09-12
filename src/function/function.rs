@@ -35,8 +35,8 @@ use super::Arg;
 ///     ],
 ///     Some(Arg::new("result", VariableType::I32)),
 ///     |args| -> FunctionOutput {
-///         let a: i32 = args[0].parse_ref();
-///         let b: i32 = args[1].parse_ref();
+///         let a = args[0].parse_ref::<i32>();
+///         let b = args[1].parse_ref::<i32>();
 ///         Ok(Some((a + b).into()))
 ///     }
 /// );
@@ -154,8 +154,8 @@ pub type FunctionOutput = Result<Option<Variable>, Box<dyn std::error::Error + S
 ///     ],
 ///     Some(Arg::new("result", VariableType::F64)),
 ///     |args| -> FunctionOutput {
-///         let x: f64 = args[0].parse_ref();
-///         let y: f64 = args[1].parse_ref();
+///         let x = args[0].parse_ref::<f64>();
+///         let y = args[1].parse_ref::<f64>();
 ///         Ok(Some((x * y).into()))
 ///     }
 /// );
@@ -197,7 +197,7 @@ impl DynamicFunction {
     ///     vec![Arg::new("name", VariableType::String)],
     ///     Some(Arg::new("message", VariableType::String)),
     ///     |args| -> FunctionOutput {
-    ///         let name: String = args[0].parse_ref();
+    ///         let name = args[0].parse_ref::<String>();
     ///         Ok(Some(format!("Hello, {}!", name).into()))
     ///     }
     /// );
