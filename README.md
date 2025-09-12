@@ -68,7 +68,7 @@ plux-rs = "1.0.0"
 ```toml
 [dependencies]
 plux-rs = { version = "1.0.0", features = ["derive"] }
-plux-lua-manager = "0.1.0"  # For running Lua plugins
+plux-lua-manager = "0.1"  # For running Lua plugins
 ```
 
 2. Create your main application:
