@@ -1,9 +1,10 @@
-use plux::{
-    context::LoadPluginContext, utils::ManagerResult, Api, Manager, Plugin, RegisterPluginContext,
-    StdInfo,
+use config::*;
+use plux_rs::{
+    Api, Manager, Plugin, RegisterPluginContext, StdInfo, context::LoadPluginContext,
+    utils::ManagerResult,
 };
 
-use crate::utils::config::{load_config, Config};
+mod config;
 
 pub struct VoidPluginManager {
     configs: Vec<Config>,

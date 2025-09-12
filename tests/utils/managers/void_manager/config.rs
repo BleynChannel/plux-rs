@@ -1,6 +1,6 @@
-use std::{collections::HashMap, fs, path::PathBuf};
+use std::{collections::HashMap, path::PathBuf};
 
-use plux::{utils::ManagerResult, Depend, StdInfo};
+use plux_rs::{Depend, StdInfo, utils::ManagerResult};
 use semver::VersionReq;
 use serde::{Deserialize, Serialize};
 
@@ -27,7 +27,7 @@ pub fn load_config(plugin_path: &PathBuf) -> ManagerResult<(Config, StdInfo)> {
         return Err(Box::new(RegisterPluginError::DoesNotContainConfig));
     }
 
-    let config_content = fs::read_to_string(config_path)?;
+    let config_content = std::fs::read_to_string(config_path)?;
     let config: Config = toml::from_str(&config_content)?;
 
     //Заполняем информацию про плагин

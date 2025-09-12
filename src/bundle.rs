@@ -3,16 +3,69 @@ use std::{cmp::Ordering, ffi::OsStr, fmt::Display};
 use semver::Version;
 use serde::{Deserialize, Serialize};
 
-use crate::{utils::BundleFromError, Depend, Info, Plugin};
+use crate::{Depend, Info, Plugin, utils::BundleFromError};
 
+/// Represents a plugin bundle with its metadata.
+///
+/// A Bundle contains the essential information needed to identify and manage a plugin,
+/// including its unique identifier, version, and format. This information is used throughout
+/// the Plux system for plugin discovery, dependency resolution, and lifecycle management.
+///
+/// # Fields
+///
+/// * `id` - Unique identifier for the plugin (e.g., "calculator", "logger")
+/// * `version` - Semantic version of the plugin (e.g., "1.0.0")
+/// * `format` - File format/extension of the plugin (e.g., "lua", "rs", "wasm")
+///
+/// # Format
+///
+/// Plugin bundles follow the naming convention: `{id}-v{version}.{format}`
+/// For example: `calculator-v1.0.0.lua` or `renderer-v2.1.0.wasm`
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, Hash)]
 pub struct Bundle {
+    /// Unique identifier for the plugin
     pub id: String,
+    /// Semantic version of the plugin
     pub version: Version,
+    /// File format/extension of the plugin
     pub format: String,
 }
 
 impl Bundle {
+    /// Creates a Bundle from a filename string.
+    ///
+    /// Parses a plugin filename following the standard Plux naming convention
+    /// `{id}-v{version}.{format}` and extracts the bundle information.
+    ///
+    /// # Parameters
+    ///
+    /// * `filename` - The filename to parse (e.g., "calculator-v1.0.0.lua")
+    ///
+    /// # Returns
+    ///
+    /// Returns `Result<Self, BundleFromError>` containing the parsed Bundle on success,
+    /// or an error if the filename doesn't match the expected format.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use plux_rs::Bundle;
+    ///
+    /// let bundle = Bundle::from_filename("my_plugin-v1.2.3.lua")?;
+    /// assert_eq!(bundle.id, "my_plugin");
+    /// assert_eq!(bundle.version.to_string(), "1.2.3");
+    /// assert_eq!(bundle.format, "lua");
+    /// # Ok::<(), Box<dyn std::error::Error>>(())
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// This function will return an error if:
+    /// - The filename cannot be converted to a string
+    /// - The filename doesn't contain a format extension
+    /// - The filename doesn't contain a version marker "-v"
+    /// - The ID, version, or format parts are empty
+    /// - The version string is not a valid semantic version
     pub fn from_filename<S>(filename: &S) -> Result<Self, BundleFromError>
     where
         S: AsRef<OsStr> + ?Sized,

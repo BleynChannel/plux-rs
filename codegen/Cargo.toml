@@ -1,6 +1,11 @@
 [package]
 name = "plux-codegen"
-version = "0.2.1"
+description = "A code generator for plux-rs"
+version = "0.2.3"
+authors = ["Bleyn"]
+license = "MIT"
+homepage = "https://github.com/BleynChannel/plux-rs"
+repository = "https://github.com/BleynChannel/plux-rs"
 edition = "2024"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -14,4 +19,4 @@ quote = "1.0.35"
 syn = { version = "2.0.48", features = ["full"] }
 
 [dev-dependencies]
-plux = { path = ".." }
+plux-rs = { path = ".." }

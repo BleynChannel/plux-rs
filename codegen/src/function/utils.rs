@@ -91,7 +91,7 @@ pub(crate) fn pat_to_ident(pat: &Pat) -> Result<Option<Ident>> {
     }
 }
 
-pub(crate) fn clear_ref(ty: &Type) -> Type {
+pub(crate) fn clear_ref(ty: &Type) -> TypePath {
     match ty {
         Type::Path(path) => {
             let mut path = path.clone();
@@ -99,17 +99,17 @@ pub(crate) fn clear_ref(ty: &Type) -> Type {
                 syn::PathArguments::AngleBracketed(args) => {
                     args.args.iter_mut().for_each(|arg| match arg {
                         syn::GenericArgument::Type(ty) => {
-                            *arg = syn::GenericArgument::Type(clear_ref(ty))
+                            *arg = syn::GenericArgument::Type(Type::Path(clear_ref(ty)))
                         }
                         _ => panic!("Wrong type"),
                     });
+                    path
                 }
                 _ => panic!("Wrong type"),
             }
-            Type::Path(path)
         }
         Type::Reference(r) => match &*r.elem {
-            Type::Path(path) => Type::Path(path.clone()),
+            Type::Path(path) => path.clone(),
             _ => panic!("Wrong type"),
         },
         _ => panic!("Wrong type"),

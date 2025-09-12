@@ -1,0 +1,8 @@
+name = "Admin Panel Plugin"
+description = "An administration panel for managing users and system settings"
+author = "Bleyn"
+license = "MIT"
+
+[depends]
+
+[optional_depends]

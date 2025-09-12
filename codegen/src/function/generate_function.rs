@@ -40,7 +40,12 @@ fn generate_inputs(inputs: &Vec<(Ident, &Type)>) -> TokenStream {
         .enumerate()
         .map(|(index, (_, ty))| {
             let ty = clear_ref(*ty);
-            quote! { args[#index].try_parse_ref::<#ty>()? }
+            let type_name = ty.path.segments.last().unwrap().ident.to_string();
+            if type_name == "Variable" {
+                quote! { &args[#index].clone() }
+            } else {
+                quote! { args[#index].try_parse_ref::<#ty>()? }
+            }
         })
         .collect();
 
@@ -87,9 +92,9 @@ fn serialize_output(ty: &TypePath) -> TokenStream {
 
     if let Some((_, token)) = VARIABLE_DATAS.iter().find(|(name, _)| **name == type_name) {
         let token = format_ident!("{}", *token);
-        quote! { plux::variable::Variable::#token (result) }
+        quote! { plux_rs::variable::Variable::#token (result) }
     } else if type_name == "Vec" {
-        quote! { plux::variable::Variable::List(result.into_iter().map(|item| item.into()).collect()) }
+        quote! { plux_rs::variable::Variable::List(result.into_iter().map(|item| item.into()).collect()) }
     } else if type_name == "Variable" {
         quote! { result }
     } else {

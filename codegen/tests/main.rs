@@ -1,11 +1,11 @@
 #[cfg(test)]
 mod main {
-    use plux::{function::Function, function_call, variable::Variable};
+    use plux_rs::{function::Function, function_call, variable::Variable};
 
-    extern crate plux;
+    extern crate plux_rs;
 
     mod functions {
-        use plux::variable::Variable;
+        use plux_rs::variable::Variable;
         use plux_codegen::function;
 
         #[function]

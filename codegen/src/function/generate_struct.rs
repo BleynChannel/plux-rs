@@ -40,22 +40,22 @@ pub(crate) fn generate_struct(
     Ok(quote! {
         struct Function { #externals }
 
-        impl plux::function::Function for Function {
-            type Output = plux::function::FunctionOutput;
+        impl plux_rs::function::Function for Function {
+            type Output = plux_rs::function::FunctionOutput;
 
             fn name(&self) -> String {
                 #name
             }
 
-            fn inputs(&self) -> Vec<plux::function::Arg> {
+            fn inputs(&self) -> Vec<plux_rs::function::Arg> {
                 #inputs
             }
 
-            fn output(&self) -> Option<plux::function::Arg> {
+            fn output(&self) -> Option<plux_rs::function::Arg> {
                 #output
             }
 
-            fn call(&self, args: &[plux::variable::Variable]) -> Self::Output {
+            fn call(&self, args: &[plux_rs::variable::Variable]) -> Self::Output {
                 #function
             }
         }
@@ -106,7 +106,7 @@ fn generate_output(output: &ReturnType) -> Result<TokenStream> {
 
 fn generate_arg(name: &String, ty: &Type) -> Result<TokenStream> {
     let ty = get_variable_type_path(get_literal_type(ty))?;
-    Ok(quote! { plux::function::Arg::new(#name, #ty) })
+    Ok(quote! { plux_rs::function::Arg::new(#name, #ty) })
 }
 
 const VARIABLE_TYPES: [(&str, &str); 15] = [
@@ -133,7 +133,7 @@ fn get_variable_type_path(path: &TypePath) -> Result<TokenStream> {
     match VARIABLE_TYPES.into_iter().find(|(name, _)| **name == ident) {
         Some((_, token)) => {
             let token = format_ident!("{}", token);
-            Ok(quote! { plux::variable::VariableType::#token })
+            Ok(quote! { plux_rs::variable::VariableType::#token })
         }
         None => Err(Error::new_spanned(path, "type is not supported")),
     }
