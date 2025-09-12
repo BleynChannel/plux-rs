@@ -32,6 +32,9 @@ plux-codegen = { path = "codegen", version = "0.2" }
 plux-lua-manager = "0.1.0"
 semver = { version = "1.0", features = ["serde"] }
 toml = "0.9"
+gethostname = "1.0"
+egui = "0.32"
+eframe = "0.32"
 
 [features]
 default = ["full"]

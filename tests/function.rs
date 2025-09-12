@@ -2,8 +2,8 @@ mod utils;
 
 #[cfg(test)]
 mod tests {
-    use plux_rs::prelude::*;
     use plux_lua_manager::LuaManager;
+    use plux_rs::prelude::*;
     use semver::Version;
 
     use crate::utils::{benchmark, get_plugin_path, managers::VoidPluginManager};

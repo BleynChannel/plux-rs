@@ -1,0 +1,8 @@
+name = "Help Plugin"
+description = "A CLI help plugin that displays available commands"
+author = "Bleyn"
+license = "MIT"
+
+[depends]
+
+[optional_depends]

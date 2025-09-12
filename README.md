@@ -147,7 +147,7 @@ For a complete example, see `examples/custom_manager.rs` in the repository.
 
 ## Examples
 
-The Plux repository includes several examples to help you get started:
+The Plux repository includes several [examples](./examples) to help you get started:
 
 ### Basic Examples
 

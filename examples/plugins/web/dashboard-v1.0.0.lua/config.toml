@@ -1,0 +1,8 @@
+name = "Dashboard Plugin"
+description = "A web dashboard plugin showing user statistics"
+author = "Bleyn"
+license = "MIT"
+
+[depends]
+
+[optional_depends]

@@ -1,0 +1,10 @@
+name = "Plugin A"
+description = "A simple plugin"
+author = "Bleyn"
+license = "MIT"
+
+[depends]
+plugin_d = "1.0.0"
+
+[optional_depends]
+plugin_b = "1.0.0"
