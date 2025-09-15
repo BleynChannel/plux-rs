@@ -9,7 +9,7 @@ fn greet(name: &String, age: &i32) {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a new plugin loader
-    let mut loader = Loader::new();
+    let mut loader = SimpleLoader::new();
 
     // Configure the loader with context
     loader.context(move |mut ctx| {
@@ -28,12 +28,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Load a simple plugin
     // Note: You'll need to have a plugin file in the correct format
     // For this example, we'll assume there's a "hello-v1.0.0.lua" plugin
-    let bundle = match loader.load_plugin_now("examples/plugins/hello-v1.0.0.lua") {
-        Ok(bundle) => bundle,
-        Err((Some(e), _)) => return Err(e.into()),
-        Err((None, Some(e))) => return Err(e.into()),
-        Err((None, None)) => return Err("Unknown error".into()),
-    };
+    let bundle = loader.load_plugin_now("examples/plugins/hello-v1.0.0.lua")?;
 
     // Access the loaded plugin
     let plugin = loader.get_plugin_by_bundle(&bundle).ok_or("Plugin not found")?;

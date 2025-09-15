@@ -104,12 +104,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     })?;
 
     // Here you can load your plugin
-    let bundle = match loader.load_plugin_now("my_plugin-v1.0.0.cst") {
-        Ok(bundle) => bundle,
-        Err((Some(e), _)) => return Err(e.into()),
-        Err((None, Some(e))) => return Err(e.into()),
-        Err((None, None)) => return Err("Unknown error".into()),
-    };
+    let bundle = loader.load_plugin_now("my_plugin-v1.0.0.cst")?;
 
     println!("Plugin loaded - Bundle: {}", bundle);
 

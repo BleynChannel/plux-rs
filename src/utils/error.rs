@@ -213,6 +213,29 @@ pub enum UnloadPluginError {
     UnloadPluginByManager(#[from] Box<dyn StdError + Send + Sync>),
 }
 
+/// Error that can occur during plugin operations involving registration and loading.
+///
+/// This error type combines both registration and loading errors that can occur
+/// when performing operations like `load_plugin_now`.
+#[derive(Error, Debug)]
+pub enum PluginOperationError {
+    /// An error occurred during plugin registration
+    #[error("Plugin registration failed: {0}")]
+    Registration(#[from] RegisterPluginError),
+    
+    /// An error occurred during plugin unregistration
+    #[error("Plugin unregistration failed: {0}")]
+    Unregistration(#[from] UnregisterPluginError),
+
+    /// An error occurred during plugin loading
+    #[error("Plugin loading failed: {0}")]
+    Loading(#[from] LoadPluginError),
+
+    /// An error occurred during plugin unloading
+    #[error("Plugin unloading failed: {0}")]
+    Unloading(#[from] UnloadPluginError),
+}
+
 /// Errors that can occur when registering a function request in a plugin.
 ///
 /// This error type is returned when validating and registering function requests.

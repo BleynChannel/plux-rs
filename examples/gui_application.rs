@@ -34,7 +34,7 @@ struct GuiApp {
 impl GuiApp {
     fn new(_cc: &eframe::CreationContext<'_>) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
         // Try to create and configure the plugin loader
-        let mut loader: Loader<FunctionOutput, StdInfo> = Loader::new();
+        let mut loader: Loader<FunctionOutput, StdInfo> = SimpleLoader::new();
 
         loader
             .context(|mut ctx| {

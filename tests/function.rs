@@ -20,7 +20,7 @@ mod tests {
 
     #[test]
     fn register_function() {
-        let mut loader = Loader::new();
+        let mut loader = SimpleLoader::new();
         loader.context(move |mut ctx| {
             ctx.register_function(add());
             ctx.register_manager(VoidPluginManager::new()).unwrap();
@@ -29,7 +29,7 @@ mod tests {
 
     #[test]
     fn register_functions() {
-        let mut loader = Loader::new();
+        let mut loader = SimpleLoader::new();
         loader.context(move |mut ctx| {
             ctx.register_function(add());
             ctx.register_function(sub());
@@ -39,7 +39,7 @@ mod tests {
 
     #[test]
     fn register_request() {
-        let mut loader = Loader::new();
+        let mut loader = SimpleLoader::new();
         loader.context(move |mut ctx| {
             ctx.register_request(Request::new(
                 "mul".to_string(),
@@ -60,7 +60,7 @@ mod tests {
 
     #[test]
     fn call_request() {
-        let mut loader = Loader::new();
+        let mut loader = SimpleLoader::new();
         loader.context(move |mut ctx| {
             ctx.register_request(Request::new(
                 "echo".to_string(),
@@ -91,7 +91,7 @@ mod tests {
 
     #[test]
     fn common_call() {
-        let mut loader = Loader::new();
+        let mut loader = SimpleLoader::new();
         loader.context(move |mut ctx| {
             ctx.register_function(add());
             ctx.register_function(sub());
@@ -116,7 +116,7 @@ mod tests {
 
     #[test]
     fn loader_call_request() {
-        let mut loader = Loader::new();
+        let mut loader = SimpleLoader::new();
         loader.context(move |mut ctx| {
             ctx.register_request(Request::new(
                 "echo".to_string(),
@@ -148,7 +148,7 @@ mod tests {
 
     #[test]
     fn parallel_call_request() {
-        let mut loader = Loader::new();
+        let mut loader = SimpleLoader::new();
         loader.context(move |mut ctx| {
             ctx.register_request(Request::new(
                 "main".to_string(),
@@ -186,7 +186,7 @@ mod tests {
 
     #[test]
     fn call_plugin_function() {
-        let mut loader = Loader::new();
+        let mut loader = SimpleLoader::new();
         loader.context(move |mut ctx| {
             ctx.register_manager(LuaManager::new()).unwrap();
         });

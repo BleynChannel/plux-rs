@@ -7,8 +7,9 @@ use semver::Version;
 use crate::{
     Bundle, Info, LoaderContext, Manager, Plugin, PluginInfo, Registry, Requests,
     utils::{
-        LoadPluginError, PluginCallRequestError, Ptr, RegisterManagerError, RegisterPluginError,
-        StopLoaderError, UnloadPluginError, UnregisterManagerError, UnregisterPluginError,
+        LoadPluginError, PluginCallRequestError, PluginOperationError, Ptr, RegisterManagerError,
+        RegisterPluginError, StopLoaderError, UnloadPluginError, UnregisterManagerError,
+        UnregisterPluginError,
     },
     variable::Variable,
 };
@@ -971,7 +972,7 @@ impl<'a, O: Send + Sync, I: Info> Loader<'a, O, I> {
     }
 }
 
-impl<O: Send + Sync + 'static, I: Info + 'static> Loader<'static, O, I> {
+impl<O: Send + Sync, I: Info> Loader<'static, O, I> {
     /// Loads a plugin into the execution environment.
     ///
     /// This method loads a plugin by ID and version, making it available for execution.
@@ -1091,8 +1092,8 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Loader<'static, O, I> {
     ///
     /// # Returns
     ///
-    /// Returns `Result<Bundle, (Option<RegisterPluginError>, Option<LoadPluginError>)>`
-    /// containing the plugin bundle on success, or errors from registration or loading.
+    /// Returns `Result<Bundle, PluginOperationError>`
+    /// containing the plugin bundle on success, or an error from registration or loading.
     ///
     /// # Example
     ///
@@ -1102,23 +1103,24 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Loader<'static, O, I> {
     /// let mut loader = Loader::<'_, (), StdInfo>::new();
     /// // Configure loader with managers...
     ///
-    /// let bundle = match loader.load_plugin_now("my_plugin-v1.0.0.cst")  {
+    /// let bundle = match loader.load_plugin_now("my_plugin-v1.0.0.cst") {
     ///     Ok(bundle) => bundle,
-    ///     Err((Some(e), _)) => return Err(e.into()),
-    ///     Err((None, Some(e))) => return Err(e.into()),
-    ///     Err((None, None)) => return Err("Unknown error".into()),
+    ///     Err(e) => return Err(e.into()),
     /// };
-    /// 
+    ///
     /// println!("Loaded plugin: {}", bundle.id);
     /// # Ok::<(), Box<dyn std::error::Error>>(())
     /// ```
     pub fn load_plugin_now(
         &mut self,
         path: &str,
-    ) -> Result<Bundle, (Option<RegisterPluginError>, Option<LoadPluginError>)> {
-        let bundle = private_loader::register_plugin(self, path).map_err(|e| (Some(e), None))?;
+    ) -> Result<Bundle, crate::utils::PluginOperationError> {
+        let bundle = private_loader::register_plugin(self, path)
+            .map_err(|e| PluginOperationError::Registration(e))?;
+
         self.load_plugin_by_bundle(&bundle)
-            .map_err(|e| (None, Some(e)))?;
+            .map_err(|e| PluginOperationError::Loading(e))?;
+
         Ok(bundle)
     }
 
@@ -1132,21 +1134,20 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Loader<'static, O, I> {
     ///
     /// # Returns
     ///
-    /// Returns `Result<Vec<Bundle>, (Option<RegisterPluginError>, Option<LoadPluginError>)>`
+    /// Returns `Result<Vec<Bundle>, PluginOperationError>`
     /// containing the plugin bundles on success, or errors from registration or loading.
     ///
     /// # Type Parameters
     ///
     /// * `'b` - Lifetime of the path references
     /// * `P` - Type of the iterator containing path references
-    pub fn load_plugins<'b, P>(
-        &mut self,
-        paths: P,
-    ) -> Result<Vec<Bundle>, (Option<RegisterPluginError>, Option<LoadPluginError>)>
+    pub fn load_plugins<'b, P>(&mut self, paths: P) -> Result<Vec<Bundle>, PluginOperationError>
     where
         P: IntoIterator<Item = &'b str>,
     {
-        let bundles = self.register_plugins(paths).map_err(|e| (Some(e), None))?;
+        let bundles = self
+            .register_plugins(paths)
+            .map_err(|e| PluginOperationError::Registration(e))?;
 
         // Find plugins that are not dependencies of other plugins
         let result: Vec<_> = self
@@ -1181,7 +1182,7 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Loader<'static, O, I> {
             .collect();
 
         result.into_iter().try_for_each(|index| {
-            private_loader::load_plugin(self, index).map_err(|e| (None, Some(e)))
+            private_loader::load_plugin(self, index).map_err(|e| PluginOperationError::Loading(e))
         })?;
 
         Ok(bundles)
@@ -1197,23 +1198,20 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Loader<'static, O, I> {
     ///
     /// # Returns
     ///
-    /// Returns `Result<Vec<Bundle>, (Option<RegisterPluginError>, Option<LoadPluginError>)>`
+    /// Returns `Result<Vec<Bundle>, PluginOperationError>`
     /// containing the plugin bundles on success, or errors from registration or loading.
     ///
     /// # Type Parameters
     ///
     /// * `'b` - Lifetime of the path references
     /// * `P` - Type of the parallel iterator containing path references
-    pub fn par_load_plugins<'b, P>(
-        &mut self,
-        paths: P,
-    ) -> Result<Vec<Bundle>, (Option<RegisterPluginError>, Option<LoadPluginError>)>
+    pub fn par_load_plugins<'b, P>(&mut self, paths: P) -> Result<Vec<Bundle>, PluginOperationError>
     where
         P: IntoParallelIterator<Item = &'b str>,
     {
         let bundles = self
             .par_register_plugins(paths)
-            .map_err(|e| (Some(e), None))?;
+            .map_err(|e| PluginOperationError::Registration(e))?;
 
         // Find plugins that are not dependencies of other plugins
         let result: Vec<_> = self
@@ -1249,7 +1247,8 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Loader<'static, O, I> {
 
         let this = Ptr::new(self);
         result.into_par_iter().try_for_each(move |index| {
-            private_loader::load_plugin(this.as_mut(), index).map_err(|e| (None, Some(e)))
+            private_loader::load_plugin(this.as_mut(), index)
+                .map_err(|e| PluginOperationError::Loading(e))
         })?;
 
         Ok(bundles)
@@ -1266,7 +1265,7 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Loader<'static, O, I> {
     ///
     /// # Returns
     ///
-    /// Returns `Result<Vec<Bundle>, (Option<RegisterPluginError>, Option<UnregisterPluginError>, Option<LoadPluginError>)>`
+    /// Returns `Result<Vec<Bundle>, PluginOperationError>`
     /// containing the plugin bundles on success, or errors from registration, unregistration, or loading.
     ///
     /// # Type Parameters
@@ -1276,20 +1275,13 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Loader<'static, O, I> {
     pub fn load_only_used_plugins<'b, P>(
         &mut self,
         paths: P,
-    ) -> Result<
-        Vec<Bundle>,
-        (
-            Option<RegisterPluginError>,
-            Option<UnregisterPluginError>,
-            Option<LoadPluginError>,
-        ),
-    >
+    ) -> Result<Vec<Bundle>, PluginOperationError>
     where
         P: IntoIterator<Item = &'b str>,
     {
         let mut bundles = self
             .register_plugins(paths)
-            .map_err(|e| (Some(e), None, None))?;
+            .map_err(|e| PluginOperationError::Registration(e))?;
 
         // Find plugins that are not dependencies of other plugins
         let (used, unused): (Vec<_>, Vec<_>) = self
@@ -1334,7 +1326,7 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Loader<'static, O, I> {
             });
 
         used.into_iter().try_for_each(|index| {
-            private_loader::load_plugin(self, index).map_err(|e| (None, None, Some(e)))
+            private_loader::load_plugin(self, index).map_err(|e| PluginOperationError::Loading(e))
         })?;
 
         let mut old_indexs = vec![];
@@ -1351,7 +1343,7 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Loader<'static, O, I> {
             bundles.retain(|b| *b != *bundle);
 
             private_loader::unregister_plugin(&mut self.plugins, new_index)
-                .map_err(|e| (None, Some(e), None))?;
+                .map_err(|e| PluginOperationError::Unregistration(e))?;
 
             old_indexs.push(index);
         }
@@ -1370,7 +1362,7 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Loader<'static, O, I> {
     ///
     /// # Returns
     ///
-    /// Returns `Result<Vec<Bundle>, (Option<RegisterPluginError>, Option<UnregisterPluginError>, Option<LoadPluginError>)>`
+    /// Returns `Result<Vec<Bundle>, PluginOperationError>`
     /// containing the plugin bundles on success, or errors from registration, unregistration, or loading.
     ///
     /// # Type Parameters
@@ -1380,20 +1372,13 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Loader<'static, O, I> {
     pub fn par_load_only_used_plugins<'b, P>(
         &mut self,
         paths: P,
-    ) -> Result<
-        Vec<Bundle>,
-        (
-            Option<RegisterPluginError>,
-            Option<UnregisterPluginError>,
-            Option<LoadPluginError>,
-        ),
-    >
+    ) -> Result<Vec<Bundle>, PluginOperationError>
     where
         P: IntoParallelIterator<Item = &'b str>,
     {
         let bundles = self
             .par_register_plugins(paths)
-            .map_err(|e| (Some(e), None, None))?;
+            .map_err(|e| PluginOperationError::Registration(e))?;
 
         // Find plugins that are not dependencies of other plugins
         let (used, unused): (Vec<_>, Vec<_>) = self
@@ -1439,7 +1424,8 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Loader<'static, O, I> {
 
         let this = Ptr::new(self);
         used.into_iter().try_for_each(|index| {
-            private_loader::load_plugin(this.as_mut(), index).map_err(|e| (None, None, Some(e)))
+            private_loader::load_plugin(this.as_mut(), index)
+                .map_err(|e| PluginOperationError::Loading(e))
         })?;
 
         let mut old_indexs = vec![];
@@ -1451,7 +1437,7 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Loader<'static, O, I> {
                 .fold(0, |acc, i| if index > *i { acc + 1 } else { acc });
 
             private_loader::unregister_plugin(&mut this.as_mut().plugins, index - swap)
-                .map_err(|e| (None, Some(e), None))?;
+                .map_err(|e| PluginOperationError::Unregistration(e))?;
 
             old_indexs.push(index);
         }

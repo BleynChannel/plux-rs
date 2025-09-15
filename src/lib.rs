@@ -32,7 +32,7 @@
 //! }
 //!
 //! fn main() -> Result<(), Box<dyn std::error::Error>> {
-//!     let mut loader = Loader::new();
+//!     let mut loader = SimpleLoader::new();
 //!     
 //!     loader.context(move |mut ctx| {
 //!         ctx.register_manager(LuaManager::new())?;
@@ -47,8 +47,8 @@
 //! ```
 
 #![warn(missing_docs)]
-#![doc(html_logo_url = "https://example.com/logo.png")]
-#![doc(html_favicon_url = "https://example.com/favicon.ico")]
+// #![doc(html_logo_url = "https://example.com/logo.png")]
+// #![doc(html_favicon_url = "https://example.com/favicon.ico")]
 
 /// Context types used during plugin loading and registration.
 ///
@@ -101,6 +101,73 @@ pub type Registry<O> = Vec<Arc<dyn Function<Output = O>>>;
 /// This type alias represents a collection of requests that plugins can make to the host
 /// application, typically for accessing host-provided functionality.
 pub type Requests = Vec<Request>;
+
+/// A convenience type alias for a Loader with commonly used default type parameters.
+///
+/// This type alias simplifies the creation of a `Loader` with the following configuration:
+/// - `'static` lifetime for the loader itself
+/// - `FunctionOutput` as the output type, which is the standard return type for plugin functions
+/// - `StdInfo` as the info type, which provides standard plugin information
+///
+/// # Example
+///
+/// ```rust
+/// use plux_rs::SimpleLoader;
+///
+/// // Create a new loader with default configuration
+/// let loader = SimpleLoader::new();
+/// ```
+pub type SimpleLoader = Loader<'static, function::FunctionOutput, info::StdInfo>;
+
+/// Macro for convenient function calling with automatic argument conversion.
+///
+/// This macro simplifies calling functions by automatically converting arguments
+/// to Variables and handling the function call syntax.
+///
+/// # Examples
+///
+/// ```rust
+/// use plux_rs::{function_call, function::{Function, DynamicFunction, Arg, FunctionOutput}};
+/// use plux_rs::variable::VariableType;
+///
+/// let add = DynamicFunction::new(
+///     "add",
+///     vec![
+///         Arg::new("a", VariableType::I32),
+///         Arg::new("b", VariableType::I32),
+///     ],
+///     Some(Arg::new("result", VariableType::I32)),
+///     |args| -> FunctionOutput {
+///         let a = args[0].parse_ref::<i32>();
+///         let b = args[1].parse_ref::<i32>();
+///         Ok(Some((a + b).into()))
+///     }
+/// );
+///
+/// // Call with arguments
+/// let result = function_call!(add, 5, 3);
+/// assert_eq!(result.unwrap(), Some(8.into()));
+///
+/// // Call without arguments
+/// let no_args_func = DynamicFunction::new(
+///     "hello",
+///     vec![],
+///     Some(Arg::new("message", VariableType::String)),
+///     |_| -> FunctionOutput { Ok(Some("Hello!".into())) }
+/// );
+/// let message = function_call!(no_args_func);
+/// ```
+#[macro_export]
+macro_rules! function_call {
+	($function: ident, $($args:expr), +) => {
+        // Call a function with multiple arguments
+		$function.call(&[$($args.into()), +])
+	};
+	($function: ident) => {
+        // Call a function with no arguments
+		$function.call(&[])
+	};
+}
 
 /// Re-exports for procedural macros when the `derive` feature is enabled.
 ///
@@ -193,7 +260,44 @@ pub mod prelude {
     pub use crate::plugin::*;
     pub use crate::utils::*;
     pub use crate::variable::*;
+    pub use crate::Registry;
+    pub use crate::Requests;
+    pub use crate::SimpleLoader;
 
     #[cfg(feature = "derive")]
     pub use plux_codegen::*;
+}
+
+#[test]
+fn test_function_call_macro() {
+    use crate::{
+        function::{Arg, DynamicFunction, Function, FunctionOutput},
+        variable::VariableType,
+    };
+
+    // Creating a function
+    let func = DynamicFunction::new(
+        "add",
+        vec![
+            Arg::new("a", VariableType::I32),
+            Arg::new("b", VariableType::I32),
+        ],
+        Some(Arg::new("c", VariableType::I32)),
+        |args| -> FunctionOutput {
+            let a = args[0].parse_ref::<i32>();
+            let b = args[1].parse_ref::<i32>();
+
+            let c = a + b;
+
+            println!("{} + {} = {}", a, b, c);
+
+            Ok(Some(c.into()))
+        },
+    );
+
+    // Running the function
+    let c = function_call!(func, 1, 2);
+
+    assert!(c.is_ok());
+    assert_eq!(c.unwrap(), Some(3.into()));
 }
