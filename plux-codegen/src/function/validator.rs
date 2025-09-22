@@ -5,57 +5,12 @@ use syn::{
 
 use super::utils::pat_to_ident;
 
-pub(crate) fn validate(ast: &ItemFn, attr: &TokenStream) -> Result<()> {
+pub(crate) fn validate(ast: &ItemFn, _: &TokenStream) -> Result<()> {
     if !ast.sig.generics.params.is_empty() {
         return Err(Error::new_spanned(ast, "generics are not supported"));
     }
 
-    validate_attributes(attr)?;
     validate_function(&ast.sig)
-}
-
-//TODO: Внедрить описание функций в August
-// const VALIDATE_ATTRIBUTES: [&str; 2] = ["name", "description"];
-// const VALIDATE_STRING_ATTRIBUTES: [&str; 2] = ["name", "description"];
-
-const VALIDATE_ATTRIBUTES: [&str; 1] = ["name"];
-const VALIDATE_STRING_ATTRIBUTES: [&str; 1] = ["name"];
-
-fn validate_attributes(attrs: &TokenStream) -> Result<()> {
-    let attrs_str = attrs.to_string();
-    if !attrs_str.is_empty() {
-        for attr in attrs_str.split(',') {
-            let attr: Vec<&str> = attr.split('=').map(|token| token.trim()).collect();
-
-            if attr.len() != 2 {
-                return Err(Error::new_spanned(
-                    attrs,
-                    "attributes must have the format `path = data`",
-                ));
-            }
-
-            let path = attr[0];
-
-            if !VALIDATE_ATTRIBUTES.iter().any(|attr| *attr == path) {
-                return Err(Error::new_spanned(
-                    attrs,
-                    format!("attribute `{}` does not exist", path),
-                ));
-            }
-
-            if VALIDATE_STRING_ATTRIBUTES.iter().any(|attr| *attr == path) {
-                let data: Vec<char> = attr[1].chars().collect();
-                if data.first() != Some(&'"') || data.last() != Some(&'"') {
-                    return Err(Error::new_spanned(
-                        attrs,
-                        format!("attribute `{}` must contain string", path),
-                    ));
-                }
-            }
-        }
-    }
-
-    Ok(())
 }
 
 fn validate_function(sig: &Signature) -> Result<()> {
@@ -63,7 +18,7 @@ fn validate_function(sig: &Signature) -> Result<()> {
     validate_args(sig.inputs.iter().skip(1))?;
 
     if let syn::ReturnType::Type(_, ref ty) = sig.output {
-        validate_type(ty.as_ref(), false)?;
+        validate_output_type(ty.as_ref())?;
     }
 
     Ok(())
@@ -105,6 +60,44 @@ where
     })?;
 
     Ok(())
+}
+
+fn validate_output_type(ty: &Type) -> Result<()> {
+    match ty {
+        Type::Infer(_) | Type::Never(_) => Ok(()),
+        Type::Tuple(tuple) if tuple.elems.is_empty() => Ok(()),
+        Type::Path(path) => match path.path.segments.last() {
+            Some(segment) if segment.ident == "Result" => match &segment.arguments {
+                PathArguments::AngleBracketed(args) => {
+                    if let Some(GenericArgument::Type(ty)) = args.args.first() {
+                        match ty {
+                            Type::Tuple(tuple) => tuple.elems.is_empty().then(|| Ok(())).unwrap_or_else(|| {
+                                Err(Error::new_spanned(
+                                    tuple,
+                                    "type must contain only (), _, !, T, Result<T, ...> or Result<(), ...>",
+                                ))
+                            }),
+                            _ => validate_type(ty, false),
+                        }
+                    } else {
+                        Err(Error::new_spanned(
+                            args.args.first().unwrap(),
+                            "Result must contain only a type",
+                        ))
+                    }
+                }
+                _ => Err(Error::new_spanned(
+                    segment,
+                    "type must contain only (), _, !, T, Result<T, ...> or Result<(), ...>",
+                )),
+            },
+            _ => validate_type_path(path, false),
+        },
+        _ => Err(Error::new_spanned(
+            ty,
+            "type must contain only (), _, !, T or Result<T, ...> or Result<(), ...>",
+        )),
+    }
 }
 
 fn validate_type(ty: &Type, is_ref: bool) -> Result<()> {

@@ -4,7 +4,7 @@ use proc_macro2::{Ident, TokenStream};
 use quote::quote;
 use syn::{ItemFn, Result, Type};
 
-pub(crate) fn generate(ast: &ItemFn, attr: &TokenStream) -> Result<TokenStream> {
+pub(crate) fn generate(ast: &ItemFn, _: &TokenStream) -> Result<TokenStream> {
     let sig = &ast.sig;
     let ident = &sig.ident;
 
@@ -12,7 +12,7 @@ pub(crate) fn generate(ast: &ItemFn, attr: &TokenStream) -> Result<TokenStream> 
     let exts_args = generate_externals_atributes(&exts);
     let externals = generate_externals(&exts);
 
-    let structure = generate_struct(ast, sig, ident, attr, &exts)?;
+    let structure = generate_struct(ast, sig, ident, &exts)?;
 
     Ok(quote! {
         pub fn #ident(#exts_args) -> impl plux_rs::function::Function<Output = plux_rs::function::FunctionOutput> {

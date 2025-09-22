@@ -1,6 +1,6 @@
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
-use syn::{ReturnType, Type, TypePath};
+use syn::{GenericArgument, PathArguments, ReturnType, Type, TypePath};
 
 use crate::function::utils::{clear_ref, get_literal_type};
 
@@ -53,21 +53,71 @@ fn generate_inputs(inputs: &Vec<(Ident, &Type)>) -> TokenStream {
 }
 
 fn function_call(exts: TokenStream, args: TokenStream, output: &ReturnType) -> TokenStream {
-    let output_token = match output {
-        syn::ReturnType::Default => None,
-        syn::ReturnType::Type(_, _) => Some(quote! { let result = }),
+    let (output_token, question_token) = match output {
+        syn::ReturnType::Default => (None, None),
+        syn::ReturnType::Type(_, ty) => match ty.as_ref() {
+            Type::Path(path) => match path.path.segments.last() {
+                Some(segment) if segment.ident.to_string() == "Result" => (
+                    match &segment.arguments {
+                        PathArguments::AngleBracketed(args) => {
+                            if let Some(GenericArgument::Type(ty)) = args.args.first() {
+                                match ty {
+                                    Type::Tuple(tuple) => (tuple.elems.len() == 0)
+                                        .then(|| None)
+                                        .unwrap_or_else(|| panic!("Wrong type")),
+                                    _ => Some(quote! { let result = }),
+                                }
+                            } else {
+                                None
+                            }
+                        }
+                        _ => None,
+                    },
+                    Some(quote! { ? }),
+                ),
+                _ => (Some(quote! { let result = }), None),
+            },
+            _ => (None, None),
+        },
     };
 
-    quote! { #output_token func(#exts, #args); }
+    quote! { #output_token func(#exts, #args)#question_token; }
 }
 
 fn return_output(output: &ReturnType) -> TokenStream {
     match output {
         syn::ReturnType::Default => quote! { Ok(None) },
-        syn::ReturnType::Type(_, ty) => {
-            let result = serialize_output(get_literal_type(&*ty));
-            quote! { Ok(Some(#result)) }
-        }
+        syn::ReturnType::Type(_, ty) => match ty.as_ref() {
+            Type::Infer(_) | Type::Never(_) => quote! { Ok(None) },
+            Type::Tuple(tuple) if tuple.elems.is_empty() => quote! { Ok(None) },
+            Type::Path(path) => match path.path.segments.last() {
+                Some(segment) if segment.ident == "Result" => match &segment.arguments {
+                    PathArguments::AngleBracketed(args) => {
+                        if let Some(GenericArgument::Type(ty)) = args.args.first() {
+                            match ty {
+                                Type::Tuple(tuple) => tuple
+                                    .elems
+                                    .is_empty()
+                                    .then(|| quote! { Ok(None) })
+                                    .unwrap_or_else(|| panic!("Wrong type")),
+                                _ => {
+                                    let result = serialize_output(get_literal_type(ty));
+                                    quote! { Ok(Some(#result)) }
+                                }
+                            }
+                        } else {
+                            panic!("Wrong type")
+                        }
+                    }
+                    _ => panic!("Wrong type"),
+                },
+                _ => {
+                    let result = serialize_output(get_literal_type(ty.as_ref()));
+                    quote! { Ok(Some(#result)) }
+                }
+            },
+            _ => panic!("Wrong type"),
+        },
     }
 }
 

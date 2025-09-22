@@ -56,7 +56,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-plux-rs = "1.1.0"
+plux-rs = "1.1.1"
 ```
 
 ## Quick Start
@@ -67,7 +67,7 @@ plux-rs = "1.1.0"
 
 ```toml
 [dependencies]
-plux-rs = "1.1.0"
+plux-rs = "1.1.1"
 plux-lua-manager = "0.1"  # For running Lua plugins
 ```
 

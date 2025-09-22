@@ -1,6 +1,4 @@
-use std::collections::HashMap;
-
-use proc_macro2::{Ident, Span, TokenStream};
+use proc_macro2::{Ident, Span};
 use syn::{Error, FnArg, Pat, Result, Type, TypePath};
 
 pub(crate) fn get_literal_type(ty: &Type) -> &TypePath {
@@ -11,20 +9,6 @@ pub(crate) fn get_literal_type(ty: &Type) -> &TypePath {
             _ => panic!("Wrong type"),
         },
         _ => panic!("Wrong type"),
-    }
-}
-
-pub(crate) fn get_attributes(attr: &TokenStream) -> HashMap<String, String> {
-    let attrs_str = attr.to_string();
-    match attrs_str.is_empty() {
-        true => HashMap::new(),
-        false => attrs_str
-            .split(',')
-            .map(|attr| {
-                let attr: Vec<&str> = attr.split('=').map(|token| token.trim()).collect();
-                (attr[0].to_string(), attr[1].trim_matches('"').to_string())
-            })
-            .collect(),
     }
 }
 
