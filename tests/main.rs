@@ -76,7 +76,7 @@ mod tests {
 
     #[test]
     fn unload_managers() {
-        let mut loader = Loader::new();
+        let mut loader = SimpleLoader::new();
         loader.context(|mut ctx| {
             ctx.register_manager(VoidPluginManager::new()).unwrap();
             ctx.register_manager(LuaManager::new()).unwrap();
@@ -107,7 +107,7 @@ mod tests {
 
     #[test]
     fn heavy_load() {
-        let mut loader = Loader::new();
+        let mut loader = SimpleLoader::new();
         loader.context(|mut ctx| {
             ctx.register_manager(VoidPluginManager::new()).unwrap();
             ctx.register_manager(LuaManager::new()).unwrap();

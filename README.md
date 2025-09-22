@@ -56,7 +56,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-plux-rs = "1.0.0"
+plux-rs = "1.1.1"
 ```
 
 ## Quick Start
@@ -67,7 +67,7 @@ plux-rs = "1.0.0"
 
 ```toml
 [dependencies]
-plux-rs = { version = "1.0.0", features = ["derive"] }
+plux-rs = "1.1.1"
 plux-lua-manager = "0.1"  # For running Lua plugins
 ```
 
@@ -86,7 +86,7 @@ fn add(_: (), a: &i32, b: &i32) -> i32 {
 
 fn main() {
     // Create a new plugin loader
-    let mut loader = Loader::new();
+    let mut loader = SimpleLoader::new();
 
     // Configure the loader with context
     loader.context(move |mut ctx| {

@@ -96,7 +96,7 @@ mod tests {
 
     #[test]
     fn call_request() {
-        let mut loader = Loader::new();
+        let mut loader = SimpleLoader::new();
         loader.context(move |mut ctx| {
             ctx.register_request(Request::new(
                 "echo".to_string(),

@@ -27,7 +27,7 @@ fn get_user_data(users: &HashMap<i32, (String, i32)>, user_id: &i32) -> Variable
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a new plugin loader
-    let mut loader = Loader::new();
+    let mut loader = SimpleLoader::new();
 
     // Configure the loader with context
     loader.context(move |mut ctx| {

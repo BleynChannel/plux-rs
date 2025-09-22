@@ -1,6 +1,5 @@
 mod arg;
 mod function;
-mod macros;
 mod request;
 
 pub use arg::*;

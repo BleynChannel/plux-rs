@@ -13,7 +13,7 @@ fn process_data(_: (), value: &i32) -> i32 {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a new plugin loader
-    let mut loader = Loader::new();
+    let mut loader = SimpleLoader::new();
 
     // Configure the loader with context
     loader.context(move |mut ctx| {

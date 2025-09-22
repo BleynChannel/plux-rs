@@ -1,26 +1,25 @@
 use proc_macro2::{Ident, TokenStream};
-use quote::{format_ident, quote, ToTokens};
-use syn::{Error, ItemFn, Result, ReturnType, Signature, Type, TypePath};
+use quote::{ToTokens, format_ident, quote};
+use syn::{
+    Error, GenericArgument, ItemFn, PathArguments, Result, ReturnType, Signature, Type, TypePath,
+};
 
 use super::{
     generate_function::generate_function,
-    utils::{get_attributes, get_inputs, get_literal_type},
+    utils::{get_inputs, get_literal_type},
 };
 
 pub(crate) fn generate_struct(
     ast: &ItemFn,
     sig: &Signature,
     ident: &Ident,
-    attr: &TokenStream,
     exts: &Vec<(Ident, &Type)>,
 ) -> Result<TokenStream> {
-    let attrs = get_attributes(attr);
-
     let externals = generate_externals(exts);
 
     let ins = get_inputs(sig.inputs.iter().skip(1));
 
-    let name = generate_name(attrs.get("name"), &ident.to_string());
+    let name = generate_name(&ident.to_string());
     // //TODO: Внедрить описание функций в August
     // // let description = generate_description(
     // //     attrs.get("description"),
@@ -73,8 +72,7 @@ fn generate_externals(exts: &Vec<(Ident, &Type)>) -> TokenStream {
     quote! { #(#exts),* }
 }
 
-fn generate_name(name: Option<&String>, or: &String) -> TokenStream {
-    let name = name.map(|x| x.clone()).unwrap_or(or.to_string());
+fn generate_name(name: &String) -> TokenStream {
     quote! { #name.to_string() }
 }
 
@@ -97,10 +95,39 @@ fn generate_inputs(inputs: &Vec<(Ident, &Type)>) -> Result<TokenStream> {
 fn generate_output(output: &ReturnType) -> Result<TokenStream> {
     match output {
         syn::ReturnType::Default => Ok(quote! { None }),
-        syn::ReturnType::Type(_, ty) => {
-            let arg = generate_arg(&"output".to_string(), &*ty)?;
-            Ok(quote! { Some(#arg) })
-        }
+        syn::ReturnType::Type(_, ty) => match ty.as_ref() {
+            Type::Infer(_) | Type::Never(_) => Ok(quote! { None }),
+            Type::Tuple(tuple) if tuple.elems.is_empty() => Ok(quote! { None }),
+            Type::Path(path) => match path.path.segments.last() {
+                Some(segment) if segment.ident.to_string() == "Result" => {
+                    match &segment.arguments {
+                        PathArguments::AngleBracketed(args) => {
+                            if let Some(GenericArgument::Type(ty)) = args.args.first() {
+                                match ty {
+                                    Type::Tuple(tuple) => tuple
+                                        .elems
+                                        .is_empty()
+                                        .then(|| Ok(quote! { None }))
+                                        .unwrap_or_else(|| panic!("Wrong type")),
+                                    _ => {
+                                        let arg = generate_arg(&"output".to_string(), &*ty)?;
+                                        Ok(quote! { Some(#arg) })
+                                    }
+                                }
+                            } else {
+                                panic!("Wrong type")
+                            }
+                        }
+                        _ => panic!("Wrong type"),
+                    }
+                }
+                _ => {
+                    let arg = generate_arg(&"output".to_string(), &*ty)?;
+                    Ok(quote! { Some(#arg) })
+                }
+            },
+            _ => panic!("Wrong type"),
+        },
     }
 }
 

@@ -5,6 +5,8 @@ mod main {
     extern crate plux_rs;
 
     mod functions {
+        use std::error::Error;
+
         use plux_rs::variable::Variable;
         use plux_codegen::function;
 
@@ -16,7 +18,7 @@ mod main {
             c.to_vec()
         }
 
-        #[function(name = "Sub function")]
+        #[function]
         fn sub(_: (), a: &i32, b: &i32) -> i32 {
             let c = a - b;
             println!("{} - {} = {}", a, b, c);
@@ -33,17 +35,25 @@ mod main {
             true.into()
         }
 
-        #[function(name = "Logging")]
+        #[function]
         fn log((title, code): (&Option<String>, &i32), message: &String) {
             let title = title.clone().unwrap_or("[INFO]".to_string());
             println!("{title} #{code}: {message}");
+        }
+
+        #[function]
+        fn div(_: (), a: &i32, b: &i32) -> Result<i32, Box<dyn Error + Send + Sync>> {
+            if b == &0 {
+                return Err("division by zero".into());
+            }
+            Ok(a / b)
         }
     }
 
     #[test]
     fn serialize_add() {
         let add = functions::add();
-        println!("`add` name: {}", add.name(),);
+        println!("`add` name: {}", add.name());
 
         let result = function_call!(add, vec![1], "2");
 
@@ -54,7 +64,7 @@ mod main {
     #[test]
     fn serialize_sub() {
         let sub = functions::sub();
-        println!("`sub` name: {}", sub.name(),);
+        println!("`sub` name: {}", sub.name());
 
         let result = function_call!(sub, 3, 2);
 
@@ -81,7 +91,7 @@ mod main {
     #[test]
     fn serialize_log() {
         let log = functions::log(Some("[ERROR]".to_string()), 264);
-        println!("`log` name: {}", log.name(),);
+        println!("`log` name: {}", log.name());
 
         let mut result = function_call!(log, "It's error");
 
@@ -92,5 +102,20 @@ mod main {
 
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), None);
+    }
+
+    #[test]
+    fn serialize_div() {
+        let div = functions::div();
+        println!("`div` name: {}", div.name());
+
+        let mut result = function_call!(div, 3, 2);
+
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), Some(1.into()));
+
+        result = function_call!(div, 3, 0);
+
+        assert!(result.is_err());
     }
 }

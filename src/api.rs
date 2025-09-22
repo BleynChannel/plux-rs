@@ -5,8 +5,8 @@ use crate::{
     Bundle, Info, Loader, Manager, Plugin, Registry, Requests,
     utils::{
         CallFunctionDependError, LoadPluginError, PluginCallFunctionError, PluginCallRequestError,
-        Ptr, RegisterManagerError, RegisterPluginError, UnloadPluginError, UnregisterManagerError,
-        UnregisterPluginError,
+        PluginOperationError, Ptr, RegisterManagerError, RegisterPluginError, UnloadPluginError,
+        UnregisterManagerError, UnregisterPluginError,
     },
     variable::Variable,
 };
@@ -435,12 +435,9 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Api<O, I> {
     ///
     /// # Returns
     ///
-    /// Returns `Result<Bundle, (Option<RegisterPluginError>, Option<LoadPluginError>)>`
+    /// Returns `Result<Bundle, PluginOperationError>`
     /// containing the plugin bundle on success, or errors from registration or loading.
-    pub fn load_plugin_now(
-        &self,
-        path: &str,
-    ) -> Result<Bundle, (Option<RegisterPluginError>, Option<LoadPluginError>)> {
+    pub fn load_plugin_now(&self, path: &str) -> Result<Bundle, PluginOperationError> {
         self.loader.as_mut().load_plugin_now(path)
     }
 
@@ -454,17 +451,14 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Api<O, I> {
     ///
     /// # Returns
     ///
-    /// Returns `Result<Vec<Bundle>, (Option<RegisterPluginError>, Option<LoadPluginError>)>`
+    /// Returns `Result<Vec<Bundle>, PluginOperationError>`
     /// containing the plugin bundles on success, or errors from registration or loading.
     ///
     /// # Type Parameters
     ///
     /// * `'b` - Lifetime of the path references
     /// * `P` - Type of the iterator containing path references
-    pub fn load_plugins<'b, P>(
-        &self,
-        paths: P,
-    ) -> Result<Vec<Bundle>, (Option<RegisterPluginError>, Option<LoadPluginError>)>
+    pub fn load_plugins<'b, P>(&self, paths: P) -> Result<Vec<Bundle>, PluginOperationError>
     where
         P: IntoIterator<Item = &'b str>,
     {
@@ -481,17 +475,14 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Api<O, I> {
     ///
     /// # Returns
     ///
-    /// Returns `Result<Vec<Bundle>, (Option<RegisterPluginError>, Option<LoadPluginError>)>`
+    /// Returns `Result<Vec<Bundle>, PluginOperationError>`
     /// containing the plugin bundles on success, or errors from registration or loading.
     ///
     /// # Type Parameters
     ///
     /// * `'b` - Lifetime of the path references
     /// * `P` - Type of the parallel iterator containing path references
-    pub fn par_load_plugins<'b, P>(
-        &self,
-        paths: P,
-    ) -> Result<Vec<Bundle>, (Option<RegisterPluginError>, Option<LoadPluginError>)>
+    pub fn par_load_plugins<'b, P>(&self, paths: P) -> Result<Vec<Bundle>, PluginOperationError>
     where
         P: IntoParallelIterator<Item = &'b str>,
     {
@@ -509,7 +500,7 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Api<O, I> {
     ///
     /// # Returns
     ///
-    /// Returns `Result<Vec<Bundle>, (Option<RegisterPluginError>, Option<UnregisterPluginError>, Option<LoadPluginError>)>`
+    /// Returns `Result<Vec<Bundle>, PluginOperationError>`
     /// containing the plugin bundles on success, or errors from registration, unregistration, or loading.
     ///
     /// # Type Parameters
@@ -519,14 +510,7 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Api<O, I> {
     pub fn load_only_used_plugins<'b, P>(
         &self,
         paths: P,
-    ) -> Result<
-        Vec<Bundle>,
-        (
-            Option<RegisterPluginError>,
-            Option<UnregisterPluginError>,
-            Option<LoadPluginError>,
-        ),
-    >
+    ) -> Result<Vec<Bundle>, PluginOperationError>
     where
         P: IntoIterator<Item = &'b str>,
     {
@@ -544,7 +528,7 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Api<O, I> {
     ///
     /// # Returns
     ///
-    /// Returns `Result<Vec<Bundle>, (Option<RegisterPluginError>, Option<UnregisterPluginError>, Option<LoadPluginError>)>`
+    /// Returns `Result<Vec<Bundle>, PluginOperationError>`
     /// containing the plugin bundles on success, or errors from registration, unregistration, or loading.
     ///
     /// # Type Parameters
@@ -554,14 +538,7 @@ impl<O: Send + Sync + 'static, I: Info + 'static> Api<O, I> {
     pub fn par_load_only_used_plugins<'b, P>(
         &self,
         paths: P,
-    ) -> Result<
-        Vec<Bundle>,
-        (
-            Option<RegisterPluginError>,
-            Option<UnregisterPluginError>,
-            Option<LoadPluginError>,
-        ),
-    >
+    ) -> Result<Vec<Bundle>, PluginOperationError>
     where
         P: IntoParallelIterator<Item = &'b str>,
     {
