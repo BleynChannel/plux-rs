@@ -1,4 +1,6 @@
 #[cfg(test)]
+/// Tests for the MockManager functionality
+/// This module tests the MockManager implementation with MockPlugin
 mod manager {
     use std::collections::HashMap;
 
@@ -21,13 +23,13 @@ mod manager {
         // Plugin variables
         static USER: Mutex<String> = Mutex::new(String::new());
 
-        // Plugin functions
+        /// A sample plugin function that prints a greeting
         #[plux_rs::function]
         fn say_hello(_: ()) -> () {
             println!("Hello, {}!", USER.lock().unwrap());
         }
 
-        // Plugin requests
+        /// Plugin entrypoint function that gets the user name and stores it
         #[plux_rs::function]
         fn entrypoint(
             api: &Api<FunctionOutput, StdInfo>,
@@ -43,17 +45,20 @@ mod manager {
         }
     }
 
+    /// Sample user data for testing
     const USERS: [&'static str; 3] = ["Poul", "John", "Jane"];
 
+    /// Function to get a user by ID
     #[plux_rs::function]
     fn get_user(_: (), id: &i32) -> String {
         USERS[*id as usize].to_string()
     }
-
+    
     #[test]
     fn test() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let mut plugins = HashMap::new();
 
+        // Create mock plugin with a callback that registers functions and requests
         plugins.insert(
             plugin::BUNDLE.clone(),
             MockPlugin::new(plugin::INFO.clone(), |mut context, api| {
@@ -68,8 +73,10 @@ mod manager {
             }),
         );
 
+        // Create a MockManager with the mock plugins
         let manager = MockManager::from_plugins(plugins);
 
+        // Set up a loader with the mock manager and register functions/requests
         let mut loader = plux_rs::Loader::new();
         loader.context(move |mut ctx| {
             ctx.register_function(get_user());
@@ -79,6 +86,7 @@ mod manager {
             Ok::<(), Box<dyn std::error::Error + Send + Sync>>(())
         })?;
 
+        // Load the mock plugin
         loader.load_plugin_now(
             format!(
                 "tests/plugins/{}",
@@ -87,10 +95,10 @@ mod manager {
             .as_str(),
         )?;
 
-        // Call the entrypoint request
+        // Call the entrypoint request to setup the plugin state
         loader.call_request("entrypoint", &[])?;
 
-        // Call the say_hello function
+        // Call the say_hello function to verify the plugin is working
         let plugin = loader
             .get_plugin_by_bundle(&plugin::BUNDLE)
             .ok_or("Plugin not found")?;
