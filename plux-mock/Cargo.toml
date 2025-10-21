@@ -1,5 +1,6 @@
 [package]
 name = "plux-mock"
+description = ""
 version = "0.1.0"
 authors.workspace = true
 license.workspace = true
@@ -9,6 +10,8 @@ edition.workspace = true
 include.workspace = true
 
 [dependencies]
-semver = "1.0.27"
+plux-rs = { path = "..", version = "1.1", default-features = false, features = ["derive"]}
+semver = "1.0"
 serde = "1.0"
+thiserror = "2.0"
 toml = "0.9"

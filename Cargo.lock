@@ -2526,20 +2526,23 @@ dependencies = [
 name = "plux-mock"
 version = "0.1.0"
 dependencies = [
+ "plux-rs",
  "semver",
  "serde",
+ "thiserror 2.0.16",
  "toml",
 ]
 
 [[package]]
 name = "plux-rs"
-version = "1.1.1"
+version = "1.1.2"
 dependencies = [
  "eframe",
  "egui",
  "gethostname",
  "plux-codegen",
  "plux-lua-manager",
+ "plux-mock",
  "rayon",
  "semver",
  "serde",
