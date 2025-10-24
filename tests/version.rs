@@ -1,49 +1,56 @@
+mod plugins;
 mod utils;
 
 #[cfg(test)]
 mod tests {
-    use std::path::PathBuf;
+    use std::collections::HashMap;
 
+    use plux_mock::MockManager;
     use plux_rs::prelude::*;
-    use plux_lua_manager::LuaManager;
 
-    use crate::utils::{get_plugin_path, loader_init, managers::VoidPluginManager};
+    use crate::{
+        plugins::{function_plugin_v1, function_plugin_v2},
+        utils::{get_plugin_path, loader_init, plugins_init},
+    };
 
-    const FORMAT: &str = "vpl";
     const PATH: &str = "versions";
 
     const TOOLS: [(&str, &str); 2] = [("paint", "1.0.0"), ("photoshop", "1.0.0")];
 
-    fn get_versions_path() -> Vec<PathBuf> {
-        let id = format!("{PATH}/brush");
-
+    fn get_versions_filename() -> Vec<String> {
         vec![
-            get_plugin_path(id.as_str(), "1.0.0", FORMAT),
-            get_plugin_path(id.as_str(), "2.0.0", FORMAT),
-            get_plugin_path(id.as_str(), "3.0.0", FORMAT),
+            format!("{PATH}/brush-v1.0.0.mock"),
+            format!("{PATH}/brush-v2.0.0.mock"),
+            format!("{PATH}/brush-v3.0.0.mock"),
         ]
     }
 
-    fn get_tools_path() -> Vec<PathBuf> {
+    fn get_tools_filename() -> Vec<String> {
         TOOLS
             .into_iter()
-            .map(|(id, version)| get_plugin_path(format!("{PATH}/{id}").as_str(), version, FORMAT))
+            .map(|(id, version)| format!("{PATH}/{id}-v{version}.mock"))
             .collect()
     }
 
     #[test]
     fn load_another_version() {
-        let mut loader = loader_init(VoidPluginManager::new());
+        let filenames = get_versions_filename();
 
-        let paths = get_versions_path();
+        let plugins = plugins_init(
+            filenames
+                .iter()
+                .map(|x| x.split('/').last().unwrap())
+                .collect(),
+        );
+        let mut loader = loader_init(MockManager::from_plugins(plugins));
+
+        let paths = filenames
+            .into_iter()
+            .map(|filename| get_plugin_path(filename))
+            .collect::<Vec<_>>();
 
         let plugins = loader
-            .load_plugins(
-                paths
-                    .iter()
-                    .map(|path| path.to_str().unwrap())
-                    .collect::<Vec<_>>(),
-            )
+            .load_plugins(paths.iter().map(|x| x.to_str().unwrap()))
             .unwrap();
 
         for bundle in plugins {
@@ -53,20 +60,26 @@ mod tests {
 
     #[test]
     fn load_version_as_dependency() {
-        let mut loader = loader_init(VoidPluginManager::new());
-
-        let paths: Vec<_> = get_versions_path()
+        let filenames: Vec<_> = get_versions_filename()
             .into_iter()
-            .chain(get_tools_path().into_iter())
+            .chain(get_tools_filename().into_iter())
             .collect();
 
+        let plugins = plugins_init(
+            filenames
+                .iter()
+                .map(|x| x.split('/').last().unwrap())
+                .collect(),
+        );
+        let mut loader = loader_init(MockManager::from_plugins(plugins));
+
+        let paths = filenames
+            .into_iter()
+            .map(|filename| get_plugin_path(filename))
+            .collect::<Vec<_>>();
+
         let plugins = loader
-            .load_plugins(
-                paths
-                    .iter()
-                    .map(|path| path.to_str().unwrap())
-                    .collect::<Vec<_>>(),
-            )
+            .load_plugins(paths.iter().map(|x| x.to_str().unwrap()))
             .unwrap();
 
         for bundle in plugins {
@@ -76,12 +89,23 @@ mod tests {
 
     #[test]
     fn load_only_used_plugins() {
-        let mut loader = loader_init(VoidPluginManager::new());
-
-        let paths: Vec<_> = get_versions_path()
+        let filenames: Vec<_> = get_versions_filename()
             .into_iter()
-            .chain(get_tools_path().into_iter())
+            .chain(get_tools_filename().into_iter())
             .collect();
+
+        let plugins = plugins_init(
+            filenames
+                .iter()
+                .map(|x| x.split('/').last().unwrap())
+                .collect(),
+        );
+        let mut loader = loader_init(MockManager::from_plugins(plugins));
+
+        let paths = filenames
+            .into_iter()
+            .map(|filename| get_plugin_path(filename))
+            .collect::<Vec<_>>();
 
         let bundles = loader
             .load_only_used_plugins(paths.iter().map(|x| x.to_str().unwrap()))
@@ -96,6 +120,11 @@ mod tests {
 
     #[test]
     fn call_request() {
+        let mut plugins = HashMap::new();
+
+        function_plugin_v1::insert_plugin(&mut plugins);
+        function_plugin_v2::insert_plugin(&mut plugins);
+
         let mut loader = SimpleLoader::new();
         loader.context(move |mut ctx| {
             ctx.register_request(Request::new(
@@ -103,14 +132,14 @@ mod tests {
                 vec![VariableType::String],
                 Some(VariableType::String),
             ));
-            ctx.register_manager(LuaManager::new()).unwrap();
+            ctx.register_manager(MockManager::from_plugins(plugins))
+                .unwrap();
         });
 
-        const VERSIONS: [&str; 2] = ["1.0.0", "2.0.0"];
-        let paths: Vec<_> = VERSIONS
-            .iter()
-            .map(|&version| get_plugin_path("function_plugin", version, "lua"))
-            .collect();
+        let paths = vec![function_plugin_v1::FILENAME, function_plugin_v2::FILENAME]
+            .into_iter()
+            .map(|filename| get_plugin_path(filename))
+            .collect::<Vec<_>>();
 
         loader
             .load_plugins(paths.iter().map(|path| path.to_str().unwrap()))

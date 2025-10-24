@@ -13,10 +13,10 @@
 					"test",
 					"--no-run",
 					"--lib",
-					"--package=plux"
+					"--package=plux-rs"
 				],
 				"filter": {
-					"name": "plux",
+					"name": "plux-rs",
 					"kind": "lib"
 				}
 			},
@@ -32,7 +32,7 @@
 					"test",
 					"--no-run",
 					"--test=dependency",
-					"--package=plux"
+					"--package=plux-rs"
 				],
 				"filter": {
 					"name": "dependency",
@@ -51,7 +51,7 @@
 					"test",
 					"--no-run",
 					"--test=function",
-					"--package=plux"
+					"--package=plux-rs"
 				],
 				"filter": {
 					"name": "function",
@@ -70,7 +70,7 @@
 					"test",
 					"--no-run",
 					"--test=main",
-					"--package=plux"
+					"--package=plux-rs"
 				],
 				"filter": {
 					"name": "main",
@@ -89,7 +89,7 @@
 					"test",
 					"--no-run",
 					"--test=version",
-					"--package=plux"
+					"--package=plux-rs"
 				],
 				"filter": {
 					"name": "version",

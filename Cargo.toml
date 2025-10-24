@@ -45,7 +45,7 @@ rayon = "1.11"
 
 # Archive
 walkdir = { version = "2.5", optional = true }
-zip = { version = "5", optional = true }
+zip = { version = "6", optional = true }
 
 [dev-dependencies]
 plux-codegen = { path = "./plux-codegen", version = "0.3" }
@@ -53,9 +53,9 @@ plux-mock = { path = "./plux-mock", version = "0.1" }
 plux-lua-manager = { path = "../managers/plux-lua-manager", version = "0.1" }
 semver = { version = "1.0", features = ["serde"] }
 toml = "0.9"
-gethostname = "1.0"
-egui = "0.32"
-eframe = "0.32"
+gethostname = "1.1"
+egui = "0.33"
+eframe = "0.33"
 
 [features]
 default = ["full"]
