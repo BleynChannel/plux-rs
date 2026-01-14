@@ -1,8 +1,0 @@
-name = "Plugin B"
-description = "A simple plugin"
-author = "Bleyn"
-license = "MIT"
-
-[depends]
-
-[optional_depends]

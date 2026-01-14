@@ -1,8 +1,0 @@
-name = "User Profile Plugin"
-description = "A GUI plugin for displaying detailed user profile information"
-author = "Bleyn"
-license = "MIT"
-
-[depends]
-
-[optional_depends]

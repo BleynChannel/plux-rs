@@ -1,7 +1,12 @@
+use plux_mock::MockManager;
 use plux_rs::prelude::*;
-use plux_lua_manager::LuaManager;
+use std::collections::HashMap;
 use std::thread;
 use std::time::Duration;
+
+use crate::plugins::{parallel_one_v1, parallel_two_v1, utils::get_plugin_path};
+
+mod plugins;
 
 // A function that simulates some work
 #[plux_rs::function]
@@ -12,32 +17,43 @@ fn process_data(_: (), value: &i32) -> i32 {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Create mock plugins in memory
+    let mut plugins = HashMap::new();
+
+    // Define plugins
+    parallel_one_v1::insert_plugin(&mut plugins);
+    parallel_two_v1::insert_plugin(&mut plugins);
+
     // Create a new plugin loader
     let mut loader = SimpleLoader::new();
 
     // Configure the loader with context
     loader.context(move |mut ctx| {
-        // Register the Lua plugin manager
-        ctx.register_manager(LuaManager::new())?;
+        // Register the Mock plugin manager with our in-memory plugins
+        ctx.register_manager(MockManager::from_plugins(plugins))?;
 
         // Register functions that will be available to plugins
         ctx.register_function(process_data());
 
         // Define a request that plugins must implement
         ctx.register_request(Request::new(
-            "process".to_string(), 
-            vec![VariableType::I32], 
-            Some(VariableType::I32)
+            "process".to_string(),
+            vec![VariableType::I32],
+            Some(VariableType::I32),
         ));
-        
+
         Ok::<(), Box<dyn std::error::Error>>(())
     })?;
 
     // Load multiple plugins at once
-    let bundles = loader.load_plugins(vec![
-        "examples/plugins/parallel_one-v1.0.0.lua",
-        "examples/plugins/parallel_two-v1.0.0.lua",
-    ]).unwrap();
+    let paths = [parallel_one_v1::FILENAME, parallel_two_v1::FILENAME]
+        .into_iter()
+        .map(|filename| get_plugin_path(filename))
+        .collect::<Vec<_>>();
+
+    let bundles = loader
+        .load_plugins(paths.iter().map(|path| path.to_str().unwrap()))
+        .unwrap();
 
     println!("Loaded {} plugins", bundles.len());
 
@@ -50,12 +66,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
     let sequential_duration = start.elapsed();
-    
+
     // Call plugins in parallel
     let start = std::time::Instant::now();
     let results = loader.par_call_request("process", &[10.into()]).unwrap();
     let parallel_duration = start.elapsed();
-    
+
     for (i, result) in results.iter().enumerate() {
         match result {
             Ok(Some(value)) => println!("Parallel result {}: {:?}", i, value),
@@ -66,6 +82,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("Sequential execution took: {:?}", sequential_duration);
     println!("Parallel execution took: {:?}", parallel_duration);
-    
+
     Ok(())
 }

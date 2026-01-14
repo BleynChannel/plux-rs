@@ -45,7 +45,7 @@ rayon = "1.11"
 
 # Archive
 walkdir = { version = "2.5", optional = true }
-zip = { version = "6", optional = true }
+zip = { version = "7", optional = true }
 
 [dev-dependencies]
 plux-codegen = { path = "./plux-codegen", version = "0.3" }
@@ -56,6 +56,8 @@ toml = "0.9"
 gethostname = "1.1"
 egui = "0.33"
 eframe = "0.33"
+serde_json = "1.0"
+actix-web = "4.12"
 
 [features]
 default = ["full"]

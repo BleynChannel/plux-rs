@@ -1,8 +1,0 @@
-name = "User Info Plugin"
-description = "A CLI plugin that displays user information"
-author = "Bleyn"
-license = "MIT"
-
-[depends]
-
-[optional_depends]

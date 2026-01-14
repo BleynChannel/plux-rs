@@ -1,8 +1,9 @@
 use std::collections::HashMap;
 
 use plux_rs::{
-    Api, Bundle, Manager, Plugin, RegisterPluginContext, StdInfo, context::LoadPluginContext,
-    utils::ManagerResult,
+    Api, Bundle, Manager, Plugin, RegisterPluginContext, StdInfo,
+    context::LoadPluginContext,
+    utils::{ManagerResult, RegisterPluginError},
 };
 
 use crate::MockPlugin;
@@ -29,13 +30,11 @@ impl<'a, O: Send + Sync> Manager<'a, O, StdInfo> for MockManager<'a, O> {
     fn register_plugin(&mut self, context: RegisterPluginContext) -> ManagerResult<StdInfo> {
         println!("MockManager::register_plugin - {}", context.bundle);
 
-        let info = self
+        let plugin = self
             .plugins
             .get_mut(&context.bundle)
-            .unwrap()
-            .info
-            .take()
-            .unwrap();
+            .ok_or_else(|| RegisterPluginError::NotFound)?;
+        let info = plugin.info.clone();
 
         Ok(info)
     }
@@ -60,9 +59,7 @@ impl<'a, O: Send + Sync> Manager<'a, O, StdInfo> for MockManager<'a, O> {
             .get_mut(&context.plugin().info().bundle)
             .unwrap();
 
-        if let Some(on_load_plugin) = plugin.on_load_plugin.take() {
-            on_load_plugin(context, api)?;
-        }
+        (plugin.on_load_plugin)(context, api)?;
 
         Ok(())
     }
