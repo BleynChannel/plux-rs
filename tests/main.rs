@@ -2,16 +2,15 @@ mod utils;
 
 #[cfg(test)]
 mod tests {
-    use plux_rs::prelude::*;
-    use plux_lua_manager::LuaManager;
+    use plux_mock::MockManager;
 
-    use crate::utils::{get_plugin_path, loader_init, managers::VoidPluginManager};
+    use crate::utils::{get_plugin_path, loader_init, plugins_init};
 
     #[test]
     fn get_plugin_manager() {
-        let mut loader = loader_init(VoidPluginManager::new());
+        let mut loader = loader_init(MockManager::new());
 
-        let is_manager = loader.get_manager_ref("vpl").is_some();
+        let is_manager = loader.get_manager_ref("mock").is_some();
         assert!(is_manager);
 
         loader.stop().unwrap();
@@ -19,14 +18,13 @@ mod tests {
 
     #[test]
     fn register_plugin() {
-        let mut loader = loader_init(VoidPluginManager::new());
+        let filename = "void_plugin-v1.0.0.mock";
+
+        let plugins = plugins_init(vec![filename]);
+        let mut loader = loader_init(MockManager::from_plugins(plugins));
 
         let bundle = loader
-            .register_plugin(
-                get_plugin_path("void_plugin", "1.0.0", "vpl")
-                    .to_str()
-                    .unwrap(),
-            )
+            .register_plugin(get_plugin_path(filename).to_str().unwrap())
             .unwrap();
 
         let plugin = loader.get_plugin_by_bundle(&bundle).unwrap();
@@ -42,14 +40,13 @@ mod tests {
 
     #[test]
     fn load_plugin() {
-        let mut loader = loader_init(VoidPluginManager::new());
+        let filename = "void_plugin-v1.0.0.mock";
+
+        let plugins = plugins_init(vec![filename]);
+        let mut loader = loader_init(MockManager::from_plugins(plugins));
 
         let bundle = loader
-            .register_plugin(
-                get_plugin_path("void_plugin", "1.0.0", "vpl")
-                    .to_str()
-                    .unwrap(),
-            )
+            .register_plugin(get_plugin_path(filename).to_str().unwrap())
             .unwrap();
 
         loader.load_plugin_by_bundle(&bundle).unwrap();
@@ -60,14 +57,13 @@ mod tests {
 
     #[test]
     fn load_now_plugin() {
-        let mut loader = loader_init(VoidPluginManager::new());
+        let filename = "void_plugin-v1.0.0.mock";
+
+        let plugins = plugins_init(vec![filename]);
+        let mut loader = loader_init(MockManager::from_plugins(plugins));
 
         let bundle = loader
-            .load_plugin_now(
-                get_plugin_path("void_plugin", "1.0.0", "vpl")
-                    .to_str()
-                    .unwrap(),
-            )
+            .load_plugin_now(get_plugin_path(filename).to_str().unwrap())
             .unwrap();
 
         loader.unload_plugin_by_bundle(&bundle).unwrap();
@@ -76,51 +72,60 @@ mod tests {
 
     #[test]
     fn unload_managers() {
-        let mut loader = SimpleLoader::new();
-        loader.context(|mut ctx| {
-            ctx.register_manager(VoidPluginManager::new()).unwrap();
-            ctx.register_manager(LuaManager::new()).unwrap();
-        });
-
-        let paths = vec![
-            get_plugin_path("dependency/dep_1", "1.0.0", "vpl"),
-            get_plugin_path("plugin_for_manager", "1.0.0", "vpl"),
-            get_plugin_path("dependency/dep_2", "1.0.0", "vpl"),
-            get_plugin_path("function_plugin", "1.0.0", "lua"),
-            get_plugin_path("dependency/dep_3", "1.0.0", "vpl"),
-            get_plugin_path("dependency/dep_4", "1.0.0", "vpl"),
+        let filenames = vec![
+            "dependency/dep_1-v1.0.0.mock",
+            "plugin_for_manager-v1.0.0.mock",
+            "dependency/dep_2-v1.0.0.mock",
+            "function_plugin-v1.0.0.mock",
+            "dependency/dep_3-v1.0.0.mock",
+            "dependency/dep_4-v1.0.0.mock",
         ];
+
+        let plugins = plugins_init(
+            filenames
+                .iter()
+                .map(|x| x.split('/').last().unwrap())
+                .collect(),
+        );
+        let mut loader = loader_init(MockManager::from_plugins(plugins));
+
+        let paths = filenames
+            .into_iter()
+            .map(|filename| get_plugin_path(filename))
+            .collect::<Vec<_>>();
 
         loader
             .load_plugins(paths.iter().map(|x| x.to_str().unwrap()))
             .unwrap();
 
-        match loader.unregister_manager("lua") {
-            Err(UnregisterManagerError::UnregisterPlugin(UnregisterPluginError::UnloadError(
-                UnloadPluginError::CurrentlyUsesDepend { .. },
-            ))) => assert!(true),
-            _ => assert!(false),
-        };
+        loader.unregister_manager("mock").unwrap();
 
         loader.stop().unwrap();
     }
 
     #[test]
     fn heavy_load() {
-        let mut loader = SimpleLoader::new();
-        loader.context(|mut ctx| {
-            ctx.register_manager(VoidPluginManager::new()).unwrap();
-            ctx.register_manager(LuaManager::new()).unwrap();
-        });
-
-        let paths = vec![
-            get_plugin_path("dependency/dep_1", "1.0.0", "vpl"),
-            get_plugin_path("plugin_for_manager", "1.0.0", "vpl"),
-            get_plugin_path("dependency/dep_2", "1.0.0", "vpl"),
-            get_plugin_path("function_plugin", "1.0.0", "lua"),
-            get_plugin_path("dependency/dep_3", "1.0.0", "vpl"),
-            get_plugin_path("dependency/dep_4", "1.0.0", "vpl"),
+        let filenames = vec![
+            "dependency/dep_1-v1.0.0.mock",
+            "plugin_for_manager-v1.0.0.mock",
+            "dependency/dep_2-v1.0.0.mock",
+            "function_plugin-v1.0.0.mock",
+            "dependency/dep_3-v1.0.0.mock",
+            "dependency/dep_4-v1.0.0.mock",
         ];
+
+        let plugins = plugins_init(
+            filenames
+                .iter()
+                .map(|x| x.split('/').last().unwrap())
+                .collect(),
+        );
+        let mut loader = loader_init(MockManager::from_plugins(plugins));
+
+        let paths = filenames
+            .into_iter()
+            .map(|filename| get_plugin_path(filename))
+            .collect::<Vec<_>>();
 
         loader
             .load_plugins(paths.iter().map(|x| x.to_str().unwrap()))

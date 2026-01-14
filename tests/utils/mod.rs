@@ -1,13 +1,12 @@
-pub mod managers;
+use std::{collections::HashMap, path::PathBuf};
 
-use std::path::PathBuf;
-
+use plux_mock::MockPlugin;
 use plux_rs::{Manager, prelude::*};
 
-pub fn get_plugin_path(id: &str, version: &str, format: &str) -> PathBuf {
+pub fn get_plugin_path(filename: impl AsRef<str>) -> PathBuf {
     std::env::current_dir()
         .unwrap()
-        .join(format!("./tests/plugins/{id}-v{version}.{format}"))
+        .join(format!("./tests/plugins/{}", filename.as_ref()))
 }
 
 #[allow(dead_code)]
@@ -20,6 +19,20 @@ where
         .context(move |mut ctx| ctx.register_manager(manager))
         .unwrap();
     loader
+}
+
+#[allow(dead_code)]
+pub fn plugins_init<'a>(
+    plugin_filenames: Vec<&str>,
+) -> HashMap<Bundle, MockPlugin<'a, FunctionOutput>> {
+    plugin_filenames
+        .into_iter()
+        .map(|filename| {
+            let bundle = Bundle::from_filename(filename).unwrap();
+            let plugin = MockPlugin::new(StdInfo::new(), |_context, _api| Ok(()));
+            (bundle, plugin)
+        })
+        .collect::<HashMap<Bundle, MockPlugin<'a, FunctionOutput>>>()
 }
 
 #[allow(dead_code)]

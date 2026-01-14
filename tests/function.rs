@@ -1,12 +1,18 @@
+mod plugins;
 mod utils;
 
 #[cfg(test)]
 mod tests {
-    use plux_lua_manager::LuaManager;
+    use std::collections::HashMap;
+
+    use plux_mock::MockManager;
     use plux_rs::prelude::*;
     use semver::Version;
 
-    use crate::utils::{benchmark, get_plugin_path, managers::VoidPluginManager};
+    use crate::{
+        plugins::{function_plugin_v1, parallel_plugins, plugin_function},
+        utils::{benchmark, get_plugin_path},
+    };
 
     #[function]
     fn add(_: (), a: &i32, b: &i32) -> i32 {
@@ -23,7 +29,7 @@ mod tests {
         let mut loader = SimpleLoader::new();
         loader.context(move |mut ctx| {
             ctx.register_function(add());
-            ctx.register_manager(VoidPluginManager::new()).unwrap();
+            ctx.register_manager(MockManager::new()).unwrap();
         });
     }
 
@@ -33,12 +39,17 @@ mod tests {
         loader.context(move |mut ctx| {
             ctx.register_function(add());
             ctx.register_function(sub());
-            ctx.register_manager(VoidPluginManager::new()).unwrap();
+            ctx.register_manager(MockManager::new()).unwrap();
         });
     }
 
     #[test]
     fn register_request() {
+        let mut plugins = HashMap::new();
+
+        // Create mock plugin with a callback that registers functions and requests
+        function_plugin_v1::insert_plugin(&mut plugins);
+
         let mut loader = SimpleLoader::new();
         loader.context(move |mut ctx| {
             ctx.register_request(Request::new(
@@ -46,12 +57,13 @@ mod tests {
                 vec![VariableType::I32, VariableType::I32],
                 Some(VariableType::I32),
             ));
-            ctx.register_manager(LuaManager::new()).unwrap();
+            ctx.register_manager(MockManager::from_plugins(plugins))
+                .unwrap();
         });
 
         loader
             .load_plugin_now(
-                get_plugin_path("function_plugin", "1.0.0", "lua")
+                get_plugin_path(function_plugin_v1::FILENAME)
                     .to_str()
                     .unwrap(),
             )
@@ -60,6 +72,10 @@ mod tests {
 
     #[test]
     fn call_request() {
+        let mut plugins = HashMap::new();
+
+        function_plugin_v1::insert_plugin(&mut plugins);
+
         let mut loader = SimpleLoader::new();
         loader.context(move |mut ctx| {
             ctx.register_request(Request::new(
@@ -67,12 +83,13 @@ mod tests {
                 vec![VariableType::String],
                 Some(VariableType::String),
             ));
-            ctx.register_manager(LuaManager::new()).unwrap();
+            ctx.register_manager(MockManager::from_plugins(plugins))
+                .unwrap();
         });
 
         let plugin = loader
             .load_plugin_now(
-                get_plugin_path("function_plugin", "1.0.0", "lua")
+                get_plugin_path(function_plugin_v1::FILENAME)
                     .to_str()
                     .unwrap(),
             )
@@ -91,17 +108,22 @@ mod tests {
 
     #[test]
     fn common_call() {
+        let mut plugins = HashMap::new();
+
+        function_plugin_v1::insert_plugin(&mut plugins);
+
         let mut loader = SimpleLoader::new();
         loader.context(move |mut ctx| {
             ctx.register_function(add());
             ctx.register_function(sub());
             ctx.register_request(Request::new("main".to_string(), vec![], None));
-            ctx.register_manager(LuaManager::new()).unwrap();
+            ctx.register_manager(MockManager::from_plugins(plugins))
+                .unwrap();
         });
 
         let plugin = loader
             .load_plugin_now(
-                get_plugin_path("function_plugin", "1.0.0", "lua")
+                get_plugin_path(function_plugin_v1::FILENAME)
                     .to_str()
                     .unwrap(),
             )
@@ -116,6 +138,10 @@ mod tests {
 
     #[test]
     fn loader_call_request() {
+        let mut plugins = HashMap::new();
+
+        function_plugin_v1::insert_plugin(&mut plugins);
+
         let mut loader = SimpleLoader::new();
         loader.context(move |mut ctx| {
             ctx.register_request(Request::new(
@@ -123,12 +149,13 @@ mod tests {
                 vec![VariableType::String],
                 Some(VariableType::String),
             ));
-            ctx.register_manager(LuaManager::new()).unwrap();
+            ctx.register_manager(MockManager::from_plugins(plugins))
+                .unwrap();
         });
 
         loader
             .load_plugin_now(
-                get_plugin_path("function_plugin", "1.0.0", "lua")
+                get_plugin_path(function_plugin_v1::FILENAME)
                     .to_str()
                     .unwrap(),
             )
@@ -148,6 +175,11 @@ mod tests {
 
     #[test]
     fn parallel_call_request() {
+        let mut plugins = HashMap::new();
+
+        parallel_plugins::one_plugin::insert_plugin(&mut plugins);
+        parallel_plugins::two_plugin::insert_plugin(&mut plugins);
+
         let mut loader = SimpleLoader::new();
         loader.context(move |mut ctx| {
             ctx.register_request(Request::new(
@@ -155,17 +187,26 @@ mod tests {
                 vec![VariableType::I32],
                 None,
             ));
-            ctx.register_manager(LuaManager::new()).unwrap();
+            ctx.register_manager(MockManager::from_plugins(plugins))
+                .unwrap();
         });
 
         loader
             .load_plugins([
-                get_plugin_path("parallel_plugins/one_plugin", "1.0.0", "lua")
-                    .to_str()
-                    .unwrap(),
-                get_plugin_path("parallel_plugins/two_plugin", "1.0.0", "lua")
-                    .to_str()
-                    .unwrap(),
+                get_plugin_path(format!(
+                    "{path}/{filename}",
+                    path = parallel_plugins::PATH,
+                    filename = parallel_plugins::one_plugin::FILENAME,
+                ))
+                .to_str()
+                .unwrap(),
+                get_plugin_path(format!(
+                    "{path}/{filename}",
+                    path = parallel_plugins::PATH,
+                    filename = parallel_plugins::two_plugin::FILENAME,
+                ))
+                .to_str()
+                .unwrap(),
             ])
             .unwrap();
 
@@ -186,15 +227,34 @@ mod tests {
 
     #[test]
     fn call_plugin_function() {
+        let mut plugins = HashMap::new();
+
+        plugin_function::circle::insert_plugin(&mut plugins);
+        plugin_function::square::insert_plugin(&mut plugins);
+        plugin_function::paint::insert_plugin(&mut plugins);
+
         let mut loader = SimpleLoader::new();
         loader.context(move |mut ctx| {
-            ctx.register_manager(LuaManager::new()).unwrap();
+            ctx.register_manager(MockManager::from_plugins(plugins))
+                .unwrap();
         });
 
         let paths = [
-            get_plugin_path("plugin_function/circle", "1.0.0", "lua"),
-            get_plugin_path("plugin_function/square", "1.0.0", "lua"),
-            get_plugin_path("plugin_function/paint", "1.0.0", "lua"),
+            get_plugin_path(format!(
+                "{path}/{filename}",
+                path = plugin_function::PATH,
+                filename = plugin_function::circle::FILENAME,
+            )),
+            get_plugin_path(format!(
+                "{path}/{filename}",
+                path = plugin_function::PATH,
+                filename = plugin_function::square::FILENAME,
+            )),
+            get_plugin_path(format!(
+                "{path}/{filename}",
+                path = plugin_function::PATH,
+                filename = plugin_function::paint::FILENAME,
+            )),
         ];
 
         loader

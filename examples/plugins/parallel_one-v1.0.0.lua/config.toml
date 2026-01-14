@@ -1,8 +1,0 @@
-name = "Parallel One Plugin"
-description = "A simple parallel one plugin"
-author = "Bleyn"
-license = "MIT"
-
-[depends]
-
-[optional_depends]

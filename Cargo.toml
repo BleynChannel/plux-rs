@@ -20,7 +20,7 @@ include = [
 [package]
 name = "plux-rs"
 description = "A modular and performant plugin system for Rust applications, enabling secure and stable extension of functionality through external plugins."
-version = "1.1.1"
+version = "1.1.2"
 readme = "README.md"
 keywords = ["plugin", "modular", "extensibility", "dynamic-loading", "api"]
 categories = ["api-bindings", "development-tools"]
@@ -35,7 +35,7 @@ include.workspace = true
 
 [dependencies]
 # Utils
-plux-codegen = { path = "./plux-codegen", version = "0.3.0", optional = true }
+plux-codegen = { path = "./plux-codegen", version = "0.3", optional = true }
 serde = { version = "1.0", features = ["derive"] }
 semver = { version = "1.0", features = ["serde"] }
 thiserror = "2.0"
@@ -45,16 +45,18 @@ rayon = "1.11"
 
 # Archive
 walkdir = { version = "2.5", optional = true }
-zip = { version = "5", optional = true }
+zip = { version = "7", optional = true }
 
 [dev-dependencies]
-plux-codegen = { path = "./plux-codegen", version = "0.3.0" }
-plux-lua-manager = { path = "../managers/plux-lua-manager", version = "0.1" }
+plux-codegen = { path = "./plux-codegen", version = "0.3" }
+plux-mock = { path = "./plux-mock", version = "0.1" }
 semver = { version = "1.0", features = ["serde"] }
 toml = "0.9"
-gethostname = "1.0"
-egui = "0.32"
-eframe = "0.32"
+gethostname = "1.1"
+egui = "0.33"
+eframe = "0.33"
+serde_json = "1.0"
+actix-web = "4.12"
 
 [features]
 default = ["full"]

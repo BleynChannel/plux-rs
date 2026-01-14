@@ -1,8 +1,0 @@
-name = "Function Plugin"
-description = "Плагин для тестирования работы с программным реестром функций, а также вызов встроенных функций"
-author = "Bleyn"
-license = "MIT"
-
-[depends]
-
-[optional_depends]

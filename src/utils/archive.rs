@@ -165,7 +165,7 @@ fn test_zip() {
         std::fs::create_dir_all(temp_path).unwrap();
     }
 
-    let name = "plugin_a-v1.0.0.vpl";
+    let name = "plugin_a-v1.0.0.mock";
     let path = format!("./tests/bundles/{name}");
 
     let target_path = temp_path;
@@ -187,7 +187,7 @@ fn test_unzip() {
         std::fs::create_dir_all(temp_path).unwrap();
     }
 
-    let name = "plugin_b-v1.0.0.vpl";
+    let name = "plugin_b-v1.0.0.mock";
     let path = format!("./tests/bundles/{name}");
 
     let target_path = temp_path;

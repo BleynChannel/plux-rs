@@ -1,8 +1,0 @@
-name = "Hello Plugin"
-description = "A simple hello plugin"
-author = "Bleyn"
-license = "MIT"
-
-[depends]
-
-[optional_depends]

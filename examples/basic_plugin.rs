@@ -1,5 +1,10 @@
+use plux_mock::MockManager;
 use plux_rs::prelude::*;
-use plux_lua_manager::LuaManager;
+use std::collections::HashMap;
+
+use crate::plugins::{hello_v1, utils::get_plugin_path};
+
+mod plugins;
 
 // A simple function that will be available to plugins
 #[plux_rs::function]
@@ -8,13 +13,19 @@ fn greet(name: &String, age: &i32) {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Create mock plugins in memory
+    let mut plugins = HashMap::new();
+    
+    // Insert the hello_v1 plugin into our in-memory collection
+    hello_v1::insert_plugin(&mut plugins);
+
     // Create a new plugin loader
     let mut loader = SimpleLoader::new();
 
     // Configure the loader with context
     loader.context(move |mut ctx| {
-        // Register the Lua plugin manager
-        ctx.register_manager(LuaManager::new())?;
+        // Register the Mock plugin manager with our in-memory plugins
+        ctx.register_manager(MockManager::from_plugins(plugins))?;
 
         // Register functions that will be available to plugins
         ctx.register_function(greet("world".to_string()));
@@ -25,13 +36,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Ok::<(), Box<dyn std::error::Error>>(())
     })?;
 
-    // Load a simple plugin
-    // Note: You'll need to have a plugin file in the correct format
-    // For this example, we'll assume there's a "hello-v1.0.0.lua" plugin
-    let bundle = loader.load_plugin_now("examples/plugins/hello-v1.0.0.lua")?;
-
-    // Access the loaded plugin
-    let plugin = loader.get_plugin_by_bundle(&bundle).ok_or("Plugin not found")?;
+    // Load the plugin
+    let plugin = loader
+            .load_plugin_now(
+                get_plugin_path(hello_v1::FILENAME)
+                    .to_str()
+                    .unwrap(),
+            )
+            .map(|bundle| loader.get_plugin_by_bundle(&bundle).unwrap())
+            .unwrap();
     println!("Plugin loaded - Path: {:?}, Bundle: {}", 
              plugin.info().path, 
              plugin.info().bundle);
@@ -42,7 +55,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // Unload the plugin when done (optional)
-    loader.unload_plugin_by_bundle(&bundle)?;
+    loader.unload_plugin_by_bundle(&hello_v1::BUNDLE)?;
     
     // Stop the loader (optional)
     loader.stop()?;

@@ -1,8 +1,0 @@
-name = "System Info Plugin"
-description = "A GUI plugin for displaying comprehensive system information"
-author = "Bleyn"
-license = "MIT"
-
-[depends]
-
-[optional_depends]

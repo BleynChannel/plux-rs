@@ -1,8 +1,0 @@
-name = "Circle"
-description = "Плагин для тестирования запуска функций других плагинов"
-author = "Bleyn"
-license = "MIT"
-
-[depends]
-
-[optional_depends]

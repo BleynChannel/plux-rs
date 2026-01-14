@@ -1,8 +1,0 @@
-name = "Depend 1"
-description = "Плагин для тестирования загрузки и выгрузки зависимых плагинов"
-author = "Bleyn"
-license = "MIT"
-
-[depends]
-
-[optional_depends]
