@@ -73,7 +73,7 @@ Explains how to create custom plugin managers:
 - Support custom plugin formats
 - Handle plugin registration and execution
 
-This is useful when you want to support plugins in formats other than the default Lua support.
+This is useful when you want to support plugins in formats other than the default Mock support.
 
 ### 9. Benchmark (`benchmark.rs`)
 
@@ -84,10 +84,11 @@ A performance testing example:
 
 ## Plugin Structure
 
-Each plugin is contained in its own directory with the naming convention `{name}-v{version}.lua`. Inside each plugin directory, you'll find:
+Each plugin is contained in its own directory with the naming convention `{name}-v{version}.mock`. Inside each plugin directory, you'll find:
 
-- `config.toml`: Plugin metadata including name, description, author, and dependencies
-- `main.lua`: The plugin's main code implementing the required functions
+- **Mock Implementation**: All plugins are now created using Rust's `MockPlugin` from the `plux_mock` crate
+- **Rust Declaration**: All plugins are declared and registered in `/examples/plugins/mod.rs`
+- **Dynamic Registration**: Plugins use `insert_plugin()` functions to register themselves with the plugin system
 
 ## Running Examples
 
@@ -105,7 +106,7 @@ cargo run --example basic_plugin
 
 ## Plugin-Specific Examples
 
-In addition to the Rust examples, the `plugins` directory contains various Lua plugins that demonstrate different aspects of the plugin system:
+In addition to the Rust examples, the `plugins` directory contains various Mock plugins that demonstrate different aspects of the plugin system:
 
 - `benchmark/`: Plugins used for performance testing
 - `cli/`: CLI command plugins

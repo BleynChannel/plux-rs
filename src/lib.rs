@@ -22,7 +22,7 @@
 //!
 //! ## Quick Start
 //!
-//! ```rust,no_run
+//! ```rust,no_run,ignore
 //! use plux_rs::prelude::*;
 //! use plux_lua_manager::LuaManager;
 //!

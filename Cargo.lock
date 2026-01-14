@@ -346,12 +346,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "allocator-api2"
-version = "0.2.21"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "683d7910e743518b0e34f1186f92494becacb047c7b6bf616c96772180fef923"
-
-[[package]]
 name = "android-activity"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -725,16 +719,6 @@ checksum = "874bb8112abecc98cbd6d81ea4fa7e94fb9449648c93cc89aa40c81c24d7de03"
 dependencies = [
  "alloc-no-stdlib",
  "alloc-stdlib",
-]
-
-[[package]]
-name = "bstr"
-version = "1.12.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "63044e1ae8e69f3b5a92c736ca6269b8d12fa7efe39bf34ddb06d102cf0e2cab"
-dependencies = [
- "memchr",
- "serde",
 ]
 
 [[package]]
@@ -1364,12 +1348,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "env_home"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7f84e12ccf0a7ddc17a6c41c93326024c42920d7ee630d04950e6926645c0fe"
-
-[[package]]
 name = "epaint"
 version = "0.33.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1398,17 +1376,6 @@ name = "equivalent"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
-
-[[package]]
-name = "erased-serde"
-version = "0.4.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "89e8918065695684b2b0702da20382d5ae6065cf3327bc2d6436bd49a71ce9f3"
-dependencies = [
- "serde",
- "serde_core",
- "typeid",
-]
 
 [[package]]
 name = "errno"
@@ -1826,10 +1793,7 @@ version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5419bdc4f6a9207fbeba6d11b604d481addf78ecd10c11ad51e76c2f6482748d"
 dependencies = [
- "allocator-api2",
- "equivalent",
  "foldhash 0.2.0",
- "serde",
 ]
 
 [[package]]
@@ -2204,35 +2168,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "34080505efa8e45a4b816c349525ebe327ceaa8559756f0356cba97ef3bf7432"
 
 [[package]]
-name = "lua-src"
-version = "548.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bdc4e1aff422ad5f08cffb4719603dcdbc2be2307f4c1510d7aab74b7fa88ca8"
-dependencies = [
- "cc",
-]
-
-[[package]]
-name = "luajit-src"
-version = "210.6.6+707c12b"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a86cc925d4053d0526ae7f5bc765dbd0d7a5d1a63d43974f4966cb349ca63295"
-dependencies = [
- "cc",
- "which",
-]
-
-[[package]]
-name = "lzma-rust2"
-version = "0.13.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c60a23ffb90d527e23192f1246b14746e2f7f071cb84476dd879071696c18a4a"
-dependencies = [
- "crc",
- "sha2",
-]
-
-[[package]]
 name = "lzma-rust2"
 version = "0.15.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2316,38 +2251,6 @@ dependencies = [
  "log",
  "wasi 0.11.1+wasi-snapshot-preview1",
  "windows-sys 0.61.2",
-]
-
-[[package]]
-name = "mlua"
-version = "0.11.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "935ac67539907efcd7198137eb7358e052555f77fe1b2916600a2249351f2b33"
-dependencies = [
- "bstr",
- "either",
- "erased-serde",
- "libc",
- "mlua-sys",
- "num-traits",
- "parking_lot",
- "rustc-hash 2.1.1",
- "rustversion",
- "serde",
- "serde-value",
-]
-
-[[package]]
-name = "mlua-sys"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8c968af21bf6b19fc9ca8e7b85ee16f86e4c9e3d0591de101a5608086bda0ad8"
-dependencies = [
- "cc",
- "cfg-if",
- "lua-src",
- "luajit-src",
- "pkg-config",
 ]
 
 [[package]]
@@ -2770,15 +2673,6 @@ dependencies = [
 
 [[package]]
 name = "ordered-float"
-version = "2.10.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "68f19d67e5a2795c94e73e0bb1cc1a7edeb2e28efd39e2e1c9b7a40c1108b11c"
-dependencies = [
- "num-traits",
-]
-
-[[package]]
-name = "ordered-float"
 version = "4.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7bb71e1b3fa6ca1c61f383464aaf2bb0e2f8e772a1f01d486832464de363b951"
@@ -2909,61 +2803,21 @@ checksum = "7edddbd0b52d732b21ad9a5fab5c704c14cd949e5e9a1ec5929a24fded1b904c"
 name = "plux-codegen"
 version = "0.3.0"
 dependencies = [
- "plux-rs 1.1.2",
+ "plux-rs",
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "plux-codegen"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d9f161e79d9fabb3f23aa2d1b4a7d35850ccc76a493a3f68eebf9b2ac638333f"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "plux-lua-manager"
-version = "0.1.2"
-dependencies = [
- "hashbrown 0.16.0",
- "log",
- "mlua",
- "plux-rs 1.1.1",
- "semver",
- "serde",
- "thiserror 2.0.17",
- "toml",
 ]
 
 [[package]]
 name = "plux-mock"
 version = "0.1.1"
 dependencies = [
- "plux-rs 1.1.2",
+ "plux-rs",
  "semver",
  "serde",
  "thiserror 2.0.17",
  "toml",
-]
-
-[[package]]
-name = "plux-rs"
-version = "1.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49089d133bf60f17493f1c609cc2c433c4870c7050997780102a41a550521a75"
-dependencies = [
- "plux-codegen 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "rayon",
- "semver",
- "serde",
- "thiserror 2.0.17",
- "walkdir",
- "zip 5.1.1",
 ]
 
 [[package]]
@@ -2974,8 +2828,7 @@ dependencies = [
  "eframe",
  "egui",
  "gethostname",
- "plux-codegen 0.3.0",
- "plux-lua-manager",
+ "plux-codegen",
  "plux-mock",
  "rayon",
  "semver",
@@ -2984,7 +2837,7 @@ dependencies = [
  "thiserror 2.0.17",
  "toml",
  "walkdir",
- "zip 7.0.0",
+ "zip",
 ]
 
 [[package]]
@@ -3369,16 +3222,6 @@ checksum = "0dca6411025b24b60bfa7ec1fe1f8e710ac09782dca409ee8237ba74b51295fd"
 dependencies = [
  "serde_core",
  "serde_derive",
-]
-
-[[package]]
-name = "serde-value"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f3a1a3341211875ef120e117ea7fd5228530ae7e7036a779fdc9117be6b3282c"
-dependencies = [
- "ordered-float 2.10.1",
- "serde",
 ]
 
 [[package]]
@@ -3905,12 +3748,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "typeid"
-version = "1.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bc7d623258602320d5c55d1bc22793b57daff0ec7efc270ea7d55ce1d5f5471c"
-
-[[package]]
 name = "typenum"
 version = "1.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4343,7 +4180,7 @@ dependencies = [
  "ndk-sys",
  "objc",
  "once_cell",
- "ordered-float 4.6.0",
+ "ordered-float",
  "parking_lot",
  "portable-atomic",
  "portable-atomic-util",
@@ -4372,17 +4209,6 @@ dependencies = [
  "log",
  "thiserror 2.0.17",
  "web-sys",
-]
-
-[[package]]
-name = "which"
-version = "8.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d3fabb953106c3c8eea8306e4393700d7657561cb43122571b172bbfb7c7ba1d"
-dependencies = [
- "env_home",
- "rustix 1.0.8",
- "winsafe",
 ]
 
 [[package]]
@@ -4889,12 +4715,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "winsafe"
-version = "0.0.19"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d135d17ab770252ad95e9a872d365cf3090e3be864a34ab46f48555993efc904"
-
-[[package]]
 name = "wit-bindgen-rt"
 version = "0.39.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5189,33 +5009,6 @@ dependencies = [
 
 [[package]]
 name = "zip"
-version = "5.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2f852905151ac8d4d06fdca66520a661c09730a74c6d4e2b0f27b436b382e532"
-dependencies = [
- "aes",
- "arbitrary",
- "bzip2",
- "constant_time_eq",
- "crc32fast",
- "deflate64",
- "flate2",
- "getrandom",
- "hmac",
- "indexmap",
- "lzma-rust2 0.13.0",
- "memchr",
- "pbkdf2",
- "ppmd-rust",
- "sha1",
- "time",
- "zeroize",
- "zopfli",
- "zstd",
-]
-
-[[package]]
-name = "zip"
 version = "7.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bdd8a47718a4ee5fe78e07667cd36f3de80e7c2bfe727c7074245ffc7303c037"
@@ -5231,7 +5024,7 @@ dependencies = [
  "getrandom",
  "hmac",
  "indexmap",
- "lzma-rust2 0.15.4",
+ "lzma-rust2",
  "memchr",
  "pbkdf2",
  "ppmd-rust",
