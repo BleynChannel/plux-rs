@@ -76,15 +76,13 @@ impl Bundle {
             .ok_or(BundleFromError::OsStrToStrFailed)?
             .to_string();
 
-        let format = path
-            .drain(path.rfind('.').ok_or(BundleFromError::FormatFailed)? + 1..)
-            .collect::<String>();
-        let version = path
-            .drain(path.rfind("-v").ok_or(BundleFromError::VersionFailed)? + 2..path.len() - 1)
-            .collect::<String>();
-        let id = path
-            .drain(..path.rfind("-v").ok_or(BundleFromError::IDFailed)?)
-            .collect::<String>();
+        let format_index = path.rfind('.').ok_or(BundleFromError::FormatFailed)?;
+        let format = path[format_index + 1..].to_string();
+        path.truncate(format_index);
+
+        let version_index = path.rfind("-v").ok_or(BundleFromError::VersionFailed)?;
+        let version = path[version_index + 2..].to_string();
+        let id = path[..version_index].to_string();
 
         if format.is_empty() {
             return Err(BundleFromError::FormatFailed);
